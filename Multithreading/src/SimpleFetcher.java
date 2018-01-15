@@ -6,8 +6,8 @@ public class SimpleFetcher implements Fetcher{
     public List<String> fetch() {
         List<String> list = new ArrayList<>();
         list.add("Something");
-        list.add("Something 2");
-        list.add("Something 3");
+        list.add("Som thing 2");
+        list.add("Som thing 3");
         return list;
     }
 }

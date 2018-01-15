@@ -1,5 +1,3 @@
-import java.util.Random;
-
 public class MyThread extends Thread {
     private Algorithm algorithm;
     private String inputString;
@@ -18,11 +16,10 @@ public class MyThread extends Thread {
     public void run() {
         System.out.println(Thread.currentThread().getName() + " starting.");
         try {
-            Random r = new Random();
-            sleep(r.nextInt(10000));
-        } catch (InterruptedException e) {
-            getThreadGroup().interrupt();
+            algorithm.handle(inputString);
+        } catch (DuplicateWordException | UnexpectedSymbolException e) {
             System.out.println(Thread.currentThread().getName() + " interrupted.");
+            getThreadGroup().interrupt();
         }
         System.out.println(Thread.currentThread().getName() + " exiting.");
     }
