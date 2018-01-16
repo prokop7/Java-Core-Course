@@ -17,7 +17,8 @@ public class MyThread extends Thread {
         System.out.println(Thread.currentThread().getName() + " starting.");
         try {
             algorithm.handle(inputString);
-        } catch (DuplicateWordException | UnexpectedSymbolException e) {
+        } catch (DuplicateWordException | UnexpectedSymbolException | InterruptedException e) {
+            System.out.println(e);
             System.out.println(Thread.currentThread().getName() + " interrupted.");
             getThreadGroup().interrupt();
         }
