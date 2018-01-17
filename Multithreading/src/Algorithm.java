@@ -1,3 +1,4 @@
 public interface Algorithm {
-    void handle(String s) throws DuplicateWordException, UnexpectedSymbolException, InterruptedException;
+    void processNextSymbol(char c) throws DuplicateWordException, UnexpectedSymbolException;
+    void flush() throws DuplicateWordException;
 }

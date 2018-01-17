@@ -1,5 +1,5 @@
 import java.util.List;
 
 public interface Fetcher {
-    List<String> fetch();
+    List<String> fetchAll();
 }
