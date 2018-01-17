@@ -42,6 +42,8 @@ public class DoubleWordsAlgorithm implements Algorithm {
         for (int i = 'А'; i <= 'Я'; i++) {
             set.add((char) i);
         }
+        set.add('ё');
+        set.add('Ё');
     }
 
     /***
@@ -60,6 +62,7 @@ public class DoubleWordsAlgorithm implements Algorithm {
         set.add(';');
         set.add('(');
         set.add(')');
+        set.add('—');
         set.add(' ');
     }
 

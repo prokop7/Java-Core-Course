@@ -2,13 +2,12 @@
  * Synchronized for stopping threads.
  * If error occurs in one of them then all of them will stop
  */
-public class SynchronizedThread extends Thread {
+public class SynchronizedTask implements Runnable {
     private Algorithm algorithm;
     private String inputString;
     private static boolean stopped;
 
-    SynchronizedThread(String name, Algorithm algorithm, String inputString) {
-        super(name);
+    SynchronizedTask(Algorithm algorithm, String inputString) {
         this.algorithm = algorithm;
         this.inputString = inputString;
     }
@@ -18,9 +17,9 @@ public class SynchronizedThread extends Thread {
         try {
             for (int i = 0; i < inputString.length(); i++) {
                 // Stop thread if in another error happens
-                // Check each 100 iterations for increasing performance
-                if (i % 100 == 0)
-                    synchronized (SynchronizedThread.class) {
+                // Check each 10 iterations for increasing performance
+                if (i % 10 == 0)
+                    synchronized (SynchronizedTask.class) {
                         if (stopped) {
                             System.out.println(Thread.currentThread().getName() + " interrupted.");
                             return;
@@ -33,7 +32,7 @@ public class SynchronizedThread extends Thread {
         } catch (UnexpectedSymbolException | DuplicateWordException e) {
             System.out.println(e);
             // Stop all threads
-            synchronized (SynchronizedThread.class) {
+            synchronized (SynchronizedTask.class) {
                 stopped = true;
             }
             System.out.println(Thread.currentThread().getName() + " error caught.");

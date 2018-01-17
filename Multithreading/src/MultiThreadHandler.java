@@ -1,6 +1,6 @@
 import java.util.List;
 
-public class MultiThreadHandler {
+public class MultiThreadHandler implements Handler {
     // Algorithm which will process strings
     private Class<?> algorithmClass;
     // Fetch algorithm
@@ -34,14 +34,11 @@ public class MultiThreadHandler {
             Algorithm algorithm;
             try {
                 algorithm = (Algorithm) algorithmClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException | ClassCastException e) {
                 System.out.printf("Cannot create instance of %s%n", algorithmClass.getName());
                 return;
-            } catch (ClassCastException e) {
-                System.out.printf("Class %s cannot be casted to Algorithm%n", algorithmClass.getName());
-                return;
             }
-            SynchronizedThread thread = new SynchronizedThread(String.format("Thread %d", i), algorithm, s);
+            Thread thread = new Thread(new SynchronizedTask(algorithm, s), String.format("Thread %d", i));
             thread.start();
         }
     }
