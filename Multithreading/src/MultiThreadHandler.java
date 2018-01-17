@@ -29,6 +29,8 @@ public class MultiThreadHandler implements Handler {
      */
     public void handle() {
         List<String> list = fetcher.fetchAll();
+        Thread[] threads = new Thread[list.size()];
+        SynchronizedTask.resetStopped();
         for (int i = 0; i < list.size(); i++) {
             String s = list.get(i);
             Algorithm algorithm;
@@ -39,7 +41,15 @@ public class MultiThreadHandler implements Handler {
                 return;
             }
             Thread thread = new Thread(new SynchronizedTask(algorithm, s), String.format("Thread %d", i));
+            threads[i] = thread;
             thread.start();
         }
+        for (Thread thread : threads)
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        SynchronizedTask.resetStopped();
     }
 }

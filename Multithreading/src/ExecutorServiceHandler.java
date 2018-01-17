@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ExecutorServiceHandler implements Handler {
     // Algorithm which will process strings
@@ -27,6 +28,14 @@ public class ExecutorServiceHandler implements Handler {
             }
             executor.submit(new SynchronizedTask(algorithm, s));
         }
+        // Join all threads
         executor.shutdown();
+        try {
+            executor.awaitTermination(100, TimeUnit.SECONDS);
+            executor.shutdownNow();
+        } catch (InterruptedException ignored) {
+            executor.shutdownNow();
+        }
+        SynchronizedTask.resetStopped();
     }
 }

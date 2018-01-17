@@ -12,6 +12,10 @@ public class SynchronizedTask implements Runnable {
         this.inputString = inputString;
     }
 
+    public static void resetStopped() {
+        stopped = false;
+    }
+
     @Override
     public void run() {
         try {
