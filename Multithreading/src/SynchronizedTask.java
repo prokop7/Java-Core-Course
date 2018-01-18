@@ -6,6 +6,7 @@ public class SynchronizedTask implements Runnable {
     private Algorithm algorithm;
     private String inputString;
     private static boolean stopped;
+    private static boolean logging;
 
     SynchronizedTask(Algorithm algorithm, String inputString) {
         this.algorithm = algorithm;
@@ -14,6 +15,14 @@ public class SynchronizedTask implements Runnable {
 
     public static void resetStopped() {
         stopped = false;
+    }
+
+    public static void setLogging(boolean logging) {
+        SynchronizedTask.logging = logging;
+    }
+
+    public static boolean getLogging() {
+        return logging;
     }
 
     @Override
@@ -25,21 +34,25 @@ public class SynchronizedTask implements Runnable {
                 if (i % 10 == 0)
                     synchronized (SynchronizedTask.class) {
                         if (stopped) {
-                            System.out.println(Thread.currentThread().getName() + " interrupted.");
+                            if (logging)
+                                System.out.println(Thread.currentThread().getName() + " interrupted.");
                             return;
                         }
                     }
                 algorithm.processNextSymbol(inputString.charAt(i));
             }
             algorithm.flush();
-            System.out.println(Thread.currentThread().getName() + " finished.");
+            if (logging)
+                System.out.println(Thread.currentThread().getName() + " finished.");
         } catch (UnexpectedSymbolException | DuplicateWordException e) {
-            System.out.println(e);
             // Stop all threads
             synchronized (SynchronizedTask.class) {
                 stopped = true;
             }
-            System.out.println(Thread.currentThread().getName() + " error caught.");
+            if (logging) {
+                System.out.println(e);
+                System.out.println(Thread.currentThread().getName() + " error caught.");
+            }
         }
     }
 }
