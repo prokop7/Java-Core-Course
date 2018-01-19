@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /***
@@ -21,13 +22,13 @@ import java.util.stream.Collectors;
 public class DoubleWordsAlgorithm implements Algorithm {
     private Set<Character> allowedLetters = new HashSet<>();
     // Set of separators
-    private Set<Character> specialChars = new HashSet<>();
-    private Set<String> wordSet = new HashSet<>();
+    private Set<Character> separatorChars = new HashSet<>();
+    private static ConcurrentHashMap.KeySetView<String, Boolean> wordSet = ConcurrentHashMap.newKeySet();
     private List<Character> buffer = new ArrayList<>();
 
     DoubleWordsAlgorithm() {
         fillSetWithLetters(allowedLetters);
-        fillSetWithMarks(specialChars);
+        fillSetWithSeparators(separatorChars);
     }
 
     /***
@@ -47,11 +48,15 @@ public class DoubleWordsAlgorithm implements Algorithm {
     }
 
     /***
-     * Fill set with allowed punctuation marks
+     * Fill set with allowed punctuation marks and other separators
      *
      * @param set the set to be filled
      */
-    private void fillSetWithMarks(Set<Character> set) {
+    private void fillSetWithSeparators(Set<Character> set) {
+        for (int i = '0'; i <= '9'; i++) {
+            set.add((char) i);
+        }
+
         set.add(',');
         set.add('.');
         set.add('?');
@@ -74,15 +79,15 @@ public class DoubleWordsAlgorithm implements Algorithm {
      * @throws  DuplicateWordException if the buffer contains word
      *          which already was in the <code>wordSet</code>
      * @throws  UnexpectedSymbolException if the character doesn't exists
-     *          in <code>allowedLetters</code> or <code>specialChars</code>
+     *          in <code>allowedLetters</code> or <code>separatorChars</code>
      *
      * @see #buffer
-     * @see #specialChars
+     * @see #separatorChars
      * @see #wordSet
      */
     @Override
     public void processNextSymbol(char c) throws DuplicateWordException, UnexpectedSymbolException {
-        if (specialChars.contains(c)) {
+        if (separatorChars.contains(c)) {
             if (buffer.size() > 0)
                 flush();
         } else if (allowedLetters.contains(c)) {
@@ -102,10 +107,18 @@ public class DoubleWordsAlgorithm implements Algorithm {
      */
     @Override
     public void flush() throws DuplicateWordException {
+        if (buffer.size() == 0)
+            return;
         String newWord = buffer.stream().map(Object::toString).collect(Collectors.joining());
-        if (wordSet.contains(newWord))
+        if (wordSet.contains(newWord)) {
             throw new DuplicateWordException(newWord);
+        }
         wordSet.add(newWord);
         buffer.clear();
+    }
+
+    @Override
+    public void resetAlgorithm() {
+        wordSet.clear();
     }
 }

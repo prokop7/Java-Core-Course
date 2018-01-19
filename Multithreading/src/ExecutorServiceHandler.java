@@ -36,6 +36,13 @@ public class ExecutorServiceHandler implements Handler {
         } catch (InterruptedException ignored) {
             executor.shutdownNow();
         }
+
+        try {
+            Algorithm algorithm = (Algorithm) algorithmClass.newInstance();
+            algorithm.resetAlgorithm();
+        } catch (InstantiationException | IllegalAccessException | ClassCastException ignored) {
+            return;
+        }
         SynchronizedTask.resetStopped();
     }
 }

@@ -50,6 +50,12 @@ public class MultiThreadHandler implements Handler {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        try {
+            Algorithm algorithm = (Algorithm) algorithmClass.newInstance();
+            algorithm.resetAlgorithm();
+        } catch (InstantiationException | IllegalAccessException | ClassCastException ignored) {
+            return;
+        }
         SynchronizedTask.resetStopped();
     }
 }
