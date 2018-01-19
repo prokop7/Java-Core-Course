@@ -6,7 +6,7 @@ public class SynchronizedTask implements Runnable {
     private Algorithm algorithm;
     private String inputString;
     private static boolean stopped;
-    private static boolean logging;
+    private static boolean logging = true;
 
     SynchronizedTask(Algorithm algorithm, String inputString) {
         this.algorithm = algorithm;
