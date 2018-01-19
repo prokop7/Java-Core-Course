@@ -25,7 +25,7 @@ public class SimpleFetcher implements Fetcher {
      * @return lines of file
      */
     @Override
-    public List<String> fetchAll() {
+    public List<String> fetchAll() throws IOException {
         List<String> list = new ArrayList<>();
         BufferedReader reader;
         try {
@@ -36,7 +36,7 @@ public class SimpleFetcher implements Fetcher {
             }
         } catch (IOException e) {
             System.out.printf("Could not open/read file %s%n", path);
-            return null;
+            throw e;
         }
         return list;
     }

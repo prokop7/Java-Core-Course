@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.List;
 
 public class MultiThreadHandler implements Handler {
@@ -28,7 +29,12 @@ public class MultiThreadHandler implements Handler {
      * @see #algorithmClass
      */
     public void handle() {
-        List<String> list = fetcher.fetchAll();
+        List<String> list;
+        try {
+            list = fetcher.fetchAll();
+        } catch (IOException ignored) {
+            return;
+        }
         Thread[] threads = new Thread[list.size()];
         SynchronizedTask.resetStopped();
         for (int i = 0; i < list.size(); i++) {
