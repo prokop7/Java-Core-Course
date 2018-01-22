@@ -36,7 +36,6 @@ public class MultiThreadHandler implements Handler {
             return;
         }
         Thread[] threads = new Thread[list.size()];
-        SynchronizedTask.resetStopped();
         for (int i = 0; i < list.size(); i++) {
             String s = list.get(i);
             Algorithm algorithm;
