@@ -27,9 +27,7 @@ public class SimpleFetcher implements Fetcher {
     @Override
     public List<String> fetchAll() throws IOException {
         List<String> list = new ArrayList<>();
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader(path));
+        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 list.add(line);
