@@ -27,4 +27,9 @@ public class Account {
     public Socket getSocket() {
         return socket;
     }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 }

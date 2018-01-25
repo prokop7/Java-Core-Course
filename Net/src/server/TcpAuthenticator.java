@@ -37,4 +37,17 @@ public class TcpAuthenticator implements Authenticator {
         }
         return null;
     }
+
+    @Override
+    public void passwordChange(Account account, DataInputStream inputStream, DataOutputStream outputStream) {
+        try {
+            outputStream.writeUTF("Enter a new password");
+            String password = inputStream.readUTF();
+            account.setPassword(password);
+            assert (loginPassword.get(account.getLogin()).getPassword().equals(password));
+            outputStream.writeUTF("Password changed");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

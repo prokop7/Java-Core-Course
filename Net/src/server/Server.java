@@ -2,6 +2,7 @@ package server;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -48,6 +49,9 @@ public class Server {
                         sender.send(String.format("%s has left chat", account.getLogin()), null);
                         sender.unsubscribe(socket);
                         return;
+                    } else if (Objects.equals(mes, "!psw")) {
+                        authenticator.passwordChange(account, receiver.getInputStream(socket), sender.getOutputStream(socket));
+                        continue;
                     }
                     System.out.printf("%s: %s%n", account.getLogin(), mes);
                     sender.send(mes, account);

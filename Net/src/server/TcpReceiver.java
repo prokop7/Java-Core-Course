@@ -34,7 +34,6 @@ public class TcpReceiver implements Receiver {
         try {
             return serverSocket.accept();
         } catch (IOException e) {
-
             System.out.println("Connection reset");
             return null;
         }
@@ -47,7 +46,7 @@ public class TcpReceiver implements Receiver {
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
             return dataInputStream.readUTF();
         } catch (IOException e) {
-            System.out.println("Connection reset");
+            System.out.printf("Connection aborted: %s:%s\n", socket.getInetAddress(), socket.getPort());
             return null;
         }
     }
@@ -57,7 +56,7 @@ public class TcpReceiver implements Receiver {
         try {
             return new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
-            System.out.println("Connection reset");
+            System.out.printf("Connection aborted: %s:%s\n", socket.getInetAddress(), socket.getPort());
             return null;
         }
     }
