@@ -30,7 +30,6 @@ public class TcpAuthenticator implements Authenticator {
                     account = new Account(login, password);
                     loginPassword.put(login, account);
                 }
-                outputStream.writeUTF("Welcome " + account.getLogin());
                 return account;
             }
         } catch (IOException e) {

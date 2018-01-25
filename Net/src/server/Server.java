@@ -29,7 +29,7 @@ public class Server {
             Socket socket = receiver.acceptNew();
             System.out.printf("New user connected: %s:%s\n",
                     socket.getInetAddress(),
-                    socket.getLocalSocketAddress());
+                    socket.getPort());
             Account account = authenticator.authenticate(receiver.getInputStream(socket), sender.getOutputStream(socket));
             if (account == null) {
 //                sender.send("Try again later", null, socket);
@@ -39,14 +39,17 @@ public class Server {
             account.setSocket(socket);
             sender.subscribe(account.getSocket());
 
+            sender.send(String.format("Welcome %s!", account.getLogin()), null);
+
             executorService.submit(() -> {
                 while (true) {
                     String mes = receiver.read(socket);
                     if (mes == null) {
+                        sender.send(String.format("%s has left chat", account.getLogin()), null);
                         sender.unsubscribe(socket);
                         return;
                     }
-                    System.out.println(mes);
+                    System.out.printf("%s: %s%n", account.getLogin(), mes);
                     sender.send(mes, account);
                 }
             });

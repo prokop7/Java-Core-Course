@@ -30,7 +30,7 @@ public class TcpSender implements Sender {
     @Override
     public void send(String message, Account sender) {
         for (Socket receiver : sockets) {
-            if (!receiver.equals(sender.getSocket()))
+            if (sender == null || !receiver.equals(sender.getSocket()))
                 send(message, sender, receiver);
         }
     }
@@ -39,7 +39,8 @@ public class TcpSender implements Sender {
     public void send(String message, Account sender, Socket receiver) {
         try {
             DataOutputStream outputStream = new DataOutputStream(receiver.getOutputStream());
-            outputStream.writeUTF(sender.getLogin() + ": " + message);
+            String senderName = sender == null ? "Server" : sender.getLogin();
+            outputStream.writeUTF(String.format("%s: %s", senderName, message));
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();

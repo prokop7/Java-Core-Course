@@ -2,7 +2,6 @@ package server;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -35,6 +34,7 @@ public class TcpReceiver implements Receiver {
         try {
             return serverSocket.accept();
         } catch (IOException e) {
+
             System.out.println("Connection reset");
             return null;
         }
