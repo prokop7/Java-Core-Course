@@ -10,7 +10,7 @@ import java.io.IOException;
 public class TcpChatFactory implements ChatFactory {
     private int port;
 
-    TcpChatFactory(int port) {
+    public TcpChatFactory(int port) {
         this.port = port;
     }
 

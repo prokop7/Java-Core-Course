@@ -58,15 +58,10 @@ public class TcpAuthenticator implements Authenticator {
 
     @Override
     public void passwordChange(Account account) {
-        try {
-            SocketWrapper socket = account.getSocket();
-            socket.write("Enter a new password");
-            String password = socket.read();
-            account.setPassword(password);
-            assert (loginPassword.get(account.getLogin()).getPassword().equals(password));
-            socket.write("Password changed");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        SocketWrapper socket = account.getSocket();
+        sender.send("Enter a new password:", null, socket);
+        String password = socket.read();
+        account.setPassword(password);
+        sender.send("Password changed", null, socket);
     }
 }

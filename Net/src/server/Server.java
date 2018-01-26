@@ -9,6 +9,8 @@ import java.util.concurrent.Executors;
 
 public class Server {
     private static ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private static final String pswChangeWord = "::psw";
+    private static final String exitWord = "::exit";
 
     public static void main(String[] args) {
         int port = 8080;
@@ -16,7 +18,6 @@ public class Server {
             port = Integer.parseInt(args[0]);
 //        ChatFactory tcpFactory = new TcpChatFactory(port);
 //        run(tcpFactory);
-
         ChatFactory udpFactory = new UdpChatFactory(port, port + 1);
         run(udpFactory);
     }
@@ -41,32 +42,28 @@ public class Server {
         //TODO make stopping for server
         while (!isStopped) {
             SocketWrapper socket = receiver.acceptNew();
-            //TODO move into while block
-//            System.out.printf("New user connected: %s:%s\n",
-//                    socket.getInetAddress(),
-//                    socket.getPort());
-            Account account = authenticator.authenticate(socket);
-            if (account == null) {
-                continue;
-            }
-//            sender.subscribe(account.getSocket());
-
-//            sender.send(String.format("Welcome %s!", account.getLogin()), null);
-
             executorService.submit(() -> {
+                Account account = null;
                 while (true) {
+                    if (account == null)
+                        account = authenticator.authenticate(socket);
+                    if (account == null) {
+                        if (socket.isClosed())
+                            return;
+                        continue;
+                    }
                     String mes = socket.read();
-                    if (mes == null || Objects.equals(mes, "::exit")) {
+                    if (mes == null || Objects.equals(mes, exitWord)) {
                         sender.send(String.format("%s has left chat", account.getLogin()), null);
                         sender.unsubscribe(socket);
                         account.setSocket(null);
                         return;
-                    } else if (Objects.equals(mes, "!psw")) {
+                    } else if (Objects.equals(mes, pswChangeWord)) {
                         authenticator.passwordChange(account);
-                        return;
+                    } else {
+                        System.out.printf("%s: %s%n", account.getLogin(), mes);
+                        sender.send(mes, account);
                     }
-                    System.out.printf("%s: %s%n", account.getLogin(), mes);
-                    sender.send(mes, account);
                     if (socket.isClosed())
                         return;
                 }
