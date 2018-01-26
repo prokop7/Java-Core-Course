@@ -1,15 +1,16 @@
 package server;
 
-import java.net.Socket;
-
 public class Account {
     private String login;
     private String password;
-    private Socket socket;
+    private SocketWrapper socket;
 
     Account(String login, String password) {
         this.login = login;
         this.password = password;
+    }
+
+    public Account() {
     }
 
     String getPassword() {
@@ -20,11 +21,11 @@ public class Account {
         return login;
     }
 
-    public void setSocket(Socket socket) {
+    public void setSocket(SocketWrapper socket) {
         this.socket = socket;
     }
 
-    public Socket getSocket() {
+    public SocketWrapper getSocket() {
         return socket;
     }
 
@@ -32,4 +33,7 @@ public class Account {
         this.password = password;
     }
 
+    public void setLogin(String login) {
+        this.login = login;
+    }
 }

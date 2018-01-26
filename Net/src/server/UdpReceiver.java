@@ -1,18 +1,27 @@
 package server;
 
 import java.io.IOException;
-import java.net.ServerSocket;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 
-public class TcpReceiver implements Receiver {
+public class UdpReceiver implements Receiver {
     private static final int repeatNumber = 3;
-    private ServerSocket serverSocket;
+    private DatagramSocket datagramSocket;
+    private int packetLength = 1024;
 
-    TcpReceiver(int port) throws IOException {
+
+    UdpReceiver(int port, int packetLength) throws SocketException {
+        this(port);
+        this.packetLength = packetLength;
+    }
+
+    UdpReceiver(int port) throws SocketException {
         int i = repeatNumber;
         while (i > 0) {
             i--;
             try {
-                this.serverSocket = new ServerSocket(port);
+                this.datagramSocket = new DatagramSocket(port);
                 return;
             } catch (IOException e) {
                 System.out.printf("Can't run server on port%d\n", port);
@@ -28,8 +37,11 @@ public class TcpReceiver implements Receiver {
 
     @Override
     public SocketWrapper acceptNew() {
+        byte[] bytes = new byte[packetLength];
+        DatagramPacket datagramPacket = new DatagramPacket(bytes, packetLength);
         try {
-            return new TcpSocket(serverSocket.accept());
+            datagramSocket.receive(datagramPacket);
+            return new UdpSocket(datagramPacket);
         } catch (IOException e) {
             System.out.println("Connection reset");
             return null;

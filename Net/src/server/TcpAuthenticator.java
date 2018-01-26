@@ -1,7 +1,5 @@
 package server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,34 +7,35 @@ public class TcpAuthenticator implements Authenticator {
     private ConcurrentHashMap<String, Account> loginPassword = new ConcurrentHashMap<>();
 
     @Override
-    public Account authenticate(DataInputStream inputStream, DataOutputStream outputStream) {
+    public Account authenticate(SocketWrapper socket) {
         try {
-            outputStream.writeUTF("Login:");
-            String login = inputStream.readUTF();
+            socket.write("Login:");
+            String login = socket.read();
             Account account = loginPassword.get(login);
             if (account == null)
-                outputStream.writeUTF("Would you like to register? Enter your new password:");
+                socket.write("Would you like to register? Enter your new password:");
             else {
                 if (account.getSocket() == null)
-                    outputStream.writeUTF("Password:");
+                    socket.write("Password:");
                 else {
-                    outputStream.writeUTF("Account already in use");
-                    outputStream.close();
+                    socket.write("Account already in use");
+                    socket.close();
                     return null;
                 }
             }
 
             while (true) {
-                String password = inputStream.readUTF();
+                String password = socket.read();
                 if (account != null) {
                     if (!account.getPassword().equals(password)) {
-                        outputStream.writeUTF("Wrong password, repeat:");
+                        socket.write("Wrong password, repeat:");
                         continue;
                     }
                 } else {
                     account = new Account(login, password);
                     loginPassword.put(login, account);
                 }
+                account.setSocket(socket);
                 return account;
             }
         } catch (IOException e) {
@@ -46,13 +45,14 @@ public class TcpAuthenticator implements Authenticator {
     }
 
     @Override
-    public void passwordChange(Account account, DataInputStream inputStream, DataOutputStream outputStream) {
+    public void passwordChange(Account account) {
         try {
-            outputStream.writeUTF("Enter a new password");
-            String password = inputStream.readUTF();
+            SocketWrapper socket = account.getSocket();
+            socket.write("Enter a new password");
+            String password = socket.read();
             account.setPassword(password);
             assert (loginPassword.get(account.getLogin()).getPassword().equals(password));
-            outputStream.writeUTF("Password changed");
+            socket.write("Password changed");
         } catch (IOException e) {
             e.printStackTrace();
         }
