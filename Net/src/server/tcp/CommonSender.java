@@ -40,7 +40,7 @@ public class CommonSender implements Sender {
             String senderName = sender == null ? "Server" : sender.getLogin();
             receiver.write(String.format("%s: %s", senderName, message));
         } catch (IOException e) {
-            System.out.printf("Outgoing connection aborted: %s:%s\n", receiver.getInetAddress(), receiver.getPort());
+            System.out.printf("Outgoing connection aborted: %s\n", receiver.getAddress());
         }
     }
 }

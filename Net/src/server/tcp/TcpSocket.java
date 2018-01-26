@@ -6,7 +6,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.Objects;
 
 public class TcpSocket implements SocketWrapper {
@@ -20,13 +22,11 @@ public class TcpSocket implements SocketWrapper {
         this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
     }
 
-    @Override
-    public InetAddress getInetAddress() {
+    private InetAddress getInetAddress() {
         return socket.getInetAddress();
     }
 
-    @Override
-    public int getPort() {
+    private int getPort() {
         return socket.getPort();
     }
 
@@ -49,6 +49,11 @@ public class TcpSocket implements SocketWrapper {
     @Override
     public boolean isClosed() {
         return socket.isClosed();
+    }
+
+    @Override
+    public SocketAddress getAddress() {
+        return new InetSocketAddress(getInetAddress(), getPort());
     }
 
     @Override

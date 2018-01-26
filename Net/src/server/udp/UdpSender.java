@@ -39,7 +39,7 @@ public class UdpSender extends CommonSender {
             DatagramPacket packet = ((UdpSocket) receiver).getWritablePacket(String.format("%s: %s", senderName, message));
             datagramSocket.send(packet);
         } catch (IOException e) {
-            System.out.printf("Outgoing connection aborted: %s:%s\n", receiver.getInetAddress(), receiver.getPort());
+            System.out.printf("Outgoing connection aborted: %s\n", receiver.getAddress());
         }
     }
 }

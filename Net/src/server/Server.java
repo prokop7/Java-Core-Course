@@ -63,7 +63,7 @@ public class Server {
                         return;
                     } else if (Objects.equals(mes, "!psw")) {
                         authenticator.passwordChange(account);
-                        continue;
+                        return;
                     }
                     System.out.printf("%s: %s%n", account.getLogin(), mes);
                     sender.send(mes, account);

@@ -4,88 +4,48 @@ import server.Account;
 import server.Authenticator;
 import server.Sender;
 import server.SocketWrapper;
+import server.udp.authenticate_chain.*;
 
-import java.net.DatagramPacket;
 import java.net.SocketAddress;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class UdpAuthenticator implements Authenticator {
     private ConcurrentHashMap<SocketAddress, Account> addressAccount = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Account> loginPassword = new ConcurrentHashMap<>();
+    private List<AuthenticateStep> chain = new ArrayList<>();
     private Sender sender;
-    private long timeout = 60_000;
+
+
+    UdpAuthenticator(Sender sender, long timeout) {
+        chain.add(new GratitudeHandler(addressAccount, sender));
+        chain.add(new LoginHandler(addressAccount, loginPassword, sender, timeout));
+        chain.add(new PasswordHandler(loginPassword, sender));
+        chain.add(new NullSocketHandler(addressAccount, sender));
+        chain.add(new ValidAccountHandler(loginPassword));
+    }
 
     UdpAuthenticator(Sender sender) {
+        this(sender, 60_000);
         this.sender = sender;
     }
 
     @Override
     public void passwordChange(Account account) {
+        addressAccount.get(account.getSocket().getAddress()).setPassword(null);
+        sender.send("Enter password:", null, account.getSocket());
         //TODO change password for user
     }
 
     @Override
     public Account authenticate(SocketWrapper socket) {
-        DatagramPacket packet = ((UdpSocket) socket).getPacket();
-        SocketAddress address = packet.getSocketAddress();
+        SocketAddress address = socket.getAddress();
         Account account = addressAccount.get(address);
-        if (account == null) {
-            account = new Account();
-            addressAccount.put(address, account);
-            sender.send("Login:", null, socket);
-            return null;
-        } else if (account.getLogin() == null) {
-            String login = socket.read();
-            Account cachedAccount = loginPassword.get(login);
-            if (cachedAccount != null) {
-                if (cachedAccount.getSocket() != null) {
-                    if (new Date().getTime() - cachedAccount.getLastAction() <= timeout) {
-                        sender.send(
-                                String.format("Account already in use until %s\nEnter login:",
-                                        new Date(cachedAccount.getLastAction() + timeout)),
-                                null,
-                                socket);
-                        return null;
-                    }
-                    sender.send("You have been disconnected due timeout", null, cachedAccount.getSocket());
-                    sender.unsubscribe(cachedAccount.getSocket());
-                    cachedAccount.setSocket(null);
-                }
-                account.setLogin(login);
-                sender.send("Password:", null, socket);
+        for (AuthenticateStep step : chain) {
+            if (step.handle(account, socket))
                 return null;
-            }
-            account.setLogin(login);
-            loginPassword.put(login, account);
-            sender.send("Would you like to register? Enter your new password:", null, socket);
-            return null;
-        } else if (account.getPassword() == null) {
-            String psw = socket.read();
-            Account cachedAccount = loginPassword.get(account.getLogin());
-            if (cachedAccount.getPassword() != null) {
-                if (!cachedAccount.getPassword().equals(psw)) {
-                    sender.send("Wrong password, try again:", null, socket);
-                    return null;
-                }
-            }
-            account.setPassword(psw);
-            account.setSocket(socket);
-            account.updateActive();
-            loginPassword.put(account.getLogin(), account);
-            sender.subscribe(socket);
-            sender.send("Welcome " + account.getLogin(), null);
-            return null;
-        } else if (account.getSocket() == null) {
-            addressAccount.put(address, new Account());
-            sender.send("Login:", null, socket);
-            return null;
         }
-        Account cachedAccount = loginPassword.get(account.getLogin());
-        cachedAccount.updateActive();
-        account.updateActive();
-        cachedAccount.setSocket(socket);
-        account.setSocket(socket);
         return account;
     }
 }
