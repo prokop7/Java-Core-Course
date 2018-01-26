@@ -76,45 +76,40 @@ public class DoubleWordsAlgorithm implements Algorithm {
      * an entire string at once because of the need to stop.
      *
      * @param c character to process
-     * @throws  DuplicateWordException if the buffer contains word
-     *          which already was in the <code>wordSet</code>
-     * @throws  UnexpectedSymbolException if the character doesn't exists
-     *          in <code>allowedLetters</code> or <code>separatorChars</code>
      *
      * @see #buffer
      * @see #separatorChars
      * @see #wordSet
      */
     @Override
-    public void processNextSymbol(char c) throws DuplicateWordException, UnexpectedSymbolException {
+    public boolean processNextSymbol(char c) {
         if (separatorChars.contains(c)) {
             if (buffer.size() > 0)
                 flush();
         } else if (allowedLetters.contains(c)) {
             buffer.add(c);
         } else
-            throw new UnexpectedSymbolException(c);
+            return false;
+        return true;
     }
 
     /***
      * Flush buffer and write remained characters <code>wordSet</code>
      *
-     * @throws DuplicateWordException if the buffer contains word
-     *          which already was in the <code>wordSet</code>
-     *
      * @see #buffer
      * @see #wordSet
      */
     @Override
-    public void flush() throws DuplicateWordException {
+    public boolean flush() {
         if (buffer.size() == 0)
-            return;
+            return true;
         String newWord = buffer.stream().map(Object::toString).collect(Collectors.joining());
         if (wordSet.contains(newWord)) {
-            throw new DuplicateWordException(newWord);
+            return false;
         }
         wordSet.add(newWord);
         buffer.clear();
+        return true;
     }
 
     @Override

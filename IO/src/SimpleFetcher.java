@@ -22,7 +22,7 @@ public class SimpleFetcher implements Fetcher {
         this.inputs[0] = path;
     }
 
-    public SimpleFetcher(String[] inputFiles) {
+    SimpleFetcher(String[] inputFiles) {
         inputs = inputFiles;
     }
 
@@ -31,9 +31,9 @@ public class SimpleFetcher implements Fetcher {
      * @return lines of file
      */
     @Override
-    public List<String> fetchAll() throws IOException {
+    public List<String> fetchAll() {
         List<String> list = new ArrayList<>();
-        for (String ignored : inputs) {
+        for (String s : inputs) {
             list.addAll(fetchNext());
         }
         return list;
@@ -44,7 +44,7 @@ public class SimpleFetcher implements Fetcher {
      * @return lines of file
      */
     @Override
-    public List<String> fetchNext() throws IOException {
+    public List<String> fetchNext() {
         List<String> list = new ArrayList<>();
         if (offset >= inputs.length)
             return null;
@@ -56,7 +56,6 @@ public class SimpleFetcher implements Fetcher {
             }
         } catch (IOException e) {
             System.out.printf("Could not open/read file %s%n", input);
-            throw e;
         }
         return list;
     }

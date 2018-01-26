@@ -1,5 +1,5 @@
 public interface Algorithm {
-    void processNextSymbol(char c) throws DuplicateWordException, UnexpectedSymbolException;
-    void flush() throws DuplicateWordException;
+    boolean processNextSymbol(char c);
+    boolean flush();
     void resetAlgorithm();
 }
