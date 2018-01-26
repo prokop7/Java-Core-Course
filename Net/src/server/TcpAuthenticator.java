@@ -16,8 +16,15 @@ public class TcpAuthenticator implements Authenticator {
             Account account = loginPassword.get(login);
             if (account == null)
                 outputStream.writeUTF("Would you like to register? Enter your new password:");
-            else
-                outputStream.writeUTF("Password:");
+            else {
+                if (account.getSocket() == null)
+                    outputStream.writeUTF("Password:");
+                else {
+                    outputStream.writeUTF("Account already in use");
+                    outputStream.close();
+                    return null;
+                }
+            }
 
             while (true) {
                 String password = inputStream.readUTF();

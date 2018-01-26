@@ -12,7 +12,7 @@ public class Server {
     private static Authenticator authenticator = new TcpAuthenticator();
     private static Receiver receiver;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         int port = 8080;
         if (args.length > 0)
             port = Integer.parseInt(args[0]);
@@ -33,8 +33,6 @@ public class Server {
                     socket.getPort());
             Account account = authenticator.authenticate(receiver.getInputStream(socket), sender.getOutputStream(socket));
             if (account == null) {
-//                sender.send("Try again later", null, socket);
-//                socket.close();
                 continue;
             }
             account.setSocket(socket);
