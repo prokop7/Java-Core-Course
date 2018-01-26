@@ -1,5 +1,7 @@
 package server;
 
+import server.udp.UdpChatFactory;
+
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -47,14 +49,14 @@ public class Server {
             if (account == null) {
                 continue;
             }
-            sender.subscribe(account.getSocket());
+//            sender.subscribe(account.getSocket());
 
 //            sender.send(String.format("Welcome %s!", account.getLogin()), null);
 
             executorService.submit(() -> {
                 while (true) {
                     String mes = socket.read();
-                    if (mes == null) {
+                    if (mes == null || Objects.equals(mes, "::exit")) {
                         sender.send(String.format("%s has left chat", account.getLogin()), null);
                         sender.unsubscribe(socket);
                         account.setSocket(null);

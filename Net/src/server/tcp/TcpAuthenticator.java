@@ -1,24 +1,34 @@
-package server;
+package server.tcp;
+
+import server.Account;
+import server.Authenticator;
+import server.Sender;
+import server.SocketWrapper;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TcpAuthenticator implements Authenticator {
+    private final Sender sender;
     private ConcurrentHashMap<String, Account> loginPassword = new ConcurrentHashMap<>();
+
+    public TcpAuthenticator(Sender sender) {
+        this.sender = sender;
+    }
 
     @Override
     public Account authenticate(SocketWrapper socket) {
         try {
-            socket.write("Login:");
+            sender.send("Login:", null, socket);
             String login = socket.read();
             Account account = loginPassword.get(login);
             if (account == null)
-                socket.write("Would you like to register? Enter your new password:");
+                sender.send("Would you like to register? Enter your new password:", null, socket);
             else {
                 if (account.getSocket() == null)
-                    socket.write("Password:");
+                    sender.send("Password:", null, socket);
                 else {
-                    socket.write("Account already in use");
+                    sender.send("Account already in use", null, socket);
                     socket.close();
                     return null;
                 }
@@ -28,7 +38,7 @@ public class TcpAuthenticator implements Authenticator {
                 String password = socket.read();
                 if (account != null) {
                     if (!account.getPassword().equals(password)) {
-                        socket.write("Wrong password, repeat:");
+                        sender.send("Wrong password, repeat:", null, socket);
                         continue;
                     }
                 } else {
@@ -36,6 +46,8 @@ public class TcpAuthenticator implements Authenticator {
                     loginPassword.put(login, account);
                 }
                 account.setSocket(socket);
+                sender.subscribe(socket);
+                sender.send("Welcome " + account.getLogin(), null);
                 return account;
             }
         } catch (IOException e) {

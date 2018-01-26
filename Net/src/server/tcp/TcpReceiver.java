@@ -1,4 +1,7 @@
-package server;
+package server.tcp;
+
+import server.Receiver;
+import server.SocketWrapper;
 
 import java.io.IOException;
 import java.net.ServerSocket;

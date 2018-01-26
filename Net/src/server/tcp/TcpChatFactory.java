@@ -1,4 +1,9 @@
-package server;
+package server.tcp;
+
+import server.Authenticator;
+import server.ChatFactory;
+import server.Receiver;
+import server.Sender;
 
 import java.io.IOException;
 
@@ -20,7 +25,7 @@ public class TcpChatFactory implements ChatFactory {
     }
 
     @Override
-    public Authenticator newAuthenticator(Sender ignored) {
-        return new TcpAuthenticator();
+    public Authenticator newAuthenticator(Sender sender) {
+        return new TcpAuthenticator(sender);
     }
 }

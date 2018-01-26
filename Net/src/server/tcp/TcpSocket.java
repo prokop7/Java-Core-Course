@@ -1,4 +1,6 @@
-package server;
+package server.tcp;
+
+import server.SocketWrapper;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

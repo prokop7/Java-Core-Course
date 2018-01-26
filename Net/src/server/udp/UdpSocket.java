@@ -1,4 +1,6 @@
-package server;
+package server.udp;
+
+import server.SocketWrapper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

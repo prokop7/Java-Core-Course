@@ -1,19 +1,24 @@
 package server;
 
+import java.util.Date;
+
 public class Account {
     private String login;
     private String password;
     private SocketWrapper socket;
+    private long lastAction;
 
-    Account(String login, String password) {
+    public Account(String login, String password) {
         this.login = login;
         this.password = password;
+        this.lastAction = new Date().getTime();
     }
 
     public Account() {
+        this.lastAction = new Date().getTime();
     }
 
-    String getPassword() {
+    public String getPassword() {
         return password;
     }
 
@@ -35,5 +40,13 @@ public class Account {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public void updateActive() {
+        lastAction = new Date().getTime();
+    }
+
+    public long getLastAction() {
+        return lastAction;
     }
 }

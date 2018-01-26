@@ -1,4 +1,9 @@
-package server;
+package server.udp;
+
+import server.Authenticator;
+import server.ChatFactory;
+import server.Receiver;
+import server.Sender;
 
 import java.io.IOException;
 import java.net.SocketException;

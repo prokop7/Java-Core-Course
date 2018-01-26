@@ -1,13 +1,14 @@
-package server;
+package server.tcp;
+
+import server.Account;
+import server.Sender;
+import server.SocketWrapper;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CommonSender implements Sender {
     private ConcurrentHashMap.KeySetView<SocketWrapper, Boolean> sockets = ConcurrentHashMap.newKeySet();
-
-    CommonSender() {
-    }
 
     @Override
     protected void finalize() throws Throwable {

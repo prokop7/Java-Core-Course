@@ -1,15 +1,25 @@
-package server;
+package server.udp;
+
+import server.Receiver;
+import server.SocketWrapper;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-public class UdpSender extends CommonSender {
+public class UdpReceiver implements Receiver {
     private static final int repeatNumber = 3;
     private DatagramSocket datagramSocket;
+    private int packetLength = 1024;
 
-    UdpSender(int port) throws SocketException {
+
+    UdpReceiver(int port, int packetLength) throws SocketException {
+        this(port);
+        this.packetLength = packetLength;
+    }
+
+    UdpReceiver(int port) throws SocketException {
         int i = repeatNumber;
         while (i > 0) {
             i--;
@@ -29,13 +39,15 @@ public class UdpSender extends CommonSender {
     }
 
     @Override
-    public void send(String message, Account sender, SocketWrapper receiver) {
+    public SocketWrapper acceptNew() {
+        byte[] bytes = new byte[packetLength];
+        DatagramPacket datagramPacket = new DatagramPacket(bytes, packetLength);
         try {
-            String senderName = sender == null ? "Server" : sender.getLogin();
-            DatagramPacket packet = ((UdpSocket) receiver).getWritablePacket(String.format("%s: %s", senderName, message));
-            datagramSocket.send(packet);
+            datagramSocket.receive(datagramPacket);
+            return new UdpSocket(datagramPacket);
         } catch (IOException e) {
-            System.out.printf("Outgoing connection aborted: %s:%s\n", receiver.getInetAddress(), receiver.getPort());
+            System.out.println("Connection reset");
+            return null;
         }
     }
 }
