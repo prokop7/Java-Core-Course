@@ -9,32 +9,53 @@ import java.util.List;
  * String from the input file
  */
 public class SimpleFetcher implements Fetcher {
-    private String path;
+    private String[] inputs;
+    private int offset = 0;
 
     /***
      * Create instance of <code>SimpleFetcher</code> with
-     * <code>path</code> to the working file
-     * @param path A path to the working file
+     * <code>inputs</code> to the working file
+     * @param path A inputs to the working file
      */
     SimpleFetcher(String path) {
-        this.path = path;
+        this.inputs = new String[1];
+        this.inputs[0] = path;
+    }
+
+    SimpleFetcher(String[] inputFiles) {
+        inputs = inputFiles;
     }
 
     /***
-     * Obtain synchronously all lines of file as Strings at once.
+     * Obtain synchronously all lines from all files at once.
      * @return lines of file
      */
     @Override
-    public List<String> fetchAll() throws IOException {
+    public List<String> fetchAll() {
         List<String> list = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+        for (String s : inputs) {
+            list.addAll(fetchNext());
+        }
+        return list;
+    }
+
+    /***
+     * Obtain synchronously all lines from the next file at once.
+     * @return lines of file
+     */
+    @Override
+    public List<String> fetchNext() {
+        List<String> list = new ArrayList<>();
+        if (offset >= inputs.length)
+            return null;
+        String input = inputs[offset++];
+        try (BufferedReader reader = new BufferedReader(new FileReader(input))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 list.add(line);
             }
         } catch (IOException e) {
-            System.out.printf("Could not open/read file %s%n", path);
-            throw e;
+            System.out.printf("Could not open/read file %s%n", input);
         }
         return list;
     }

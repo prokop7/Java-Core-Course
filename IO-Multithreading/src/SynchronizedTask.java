@@ -27,32 +27,40 @@ public class SynchronizedTask implements Runnable {
 
     @Override
     public void run() {
-        try {
-            for (int i = 0; i < inputString.length(); i++) {
-                // Stop thread if in another error happens
-                // Check each 10 iterations for increasing performance
-                if (i % 10 == 0)
-                    synchronized (SynchronizedTask.class) {
-                        if (stopped) {
-                            if (logging)
-                                System.out.println(Thread.currentThread().getName() + " interrupted.");
-                            return;
-                        }
+        for (int i = 0; i < inputString.length(); i++) {
+            // Stop thread if in another error happens
+            // Check each 10 iterations for increasing performance
+            if (i % 10 == 0)
+                synchronized (SynchronizedTask.class) {
+                    if (stopped) {
+                        if (logging)
+                            System.out.println(Thread.currentThread().getName() + " interrupted.");
+                        return;
                     }
-                algorithm.processNextSymbol(inputString.charAt(i));
+                }
+            if (!algorithm.processNextSymbol(inputString.charAt(i))) {
+                stopThread();
+                return;
             }
-            algorithm.flush();
-            if (logging)
-                System.out.println(Thread.currentThread().getName() + " finished.");
-        } catch (UnexpectedSymbolException | DuplicateWordException e) {
-            // Stop all threads
-            synchronized (SynchronizedTask.class) {
-                stopped = true;
-            }
-            if (logging) {
-                System.out.println(e);
-                System.out.println(Thread.currentThread().getName() + " error caught.");
-            }
+        }
+        if (!algorithm.flush()){
+            stopThread();
+            return;
+        }
+        if (logging)
+            System.out.println(Thread.currentThread().getName() + " finished.");
+    }
+
+
+    /***
+     * Stop all threads
+     */
+    private void stopThread() {
+        synchronized (SynchronizedTask.class) {
+            stopped = true;
+        }
+        if (logging) {
+            System.out.printf("%s error caught.%n", Thread.currentThread().getName());
         }
     }
 }

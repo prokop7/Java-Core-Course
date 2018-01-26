@@ -1,4 +1,3 @@
-import java.io.IOException;
 import java.util.List;
 
 public class MultiThreadHandler implements Handler {
@@ -30,11 +29,7 @@ public class MultiThreadHandler implements Handler {
      */
     public void handle() {
         List<String> list;
-        try {
-            list = fetcher.fetchAll();
-        } catch (IOException ignored) {
-            return;
-        }
+        list = fetcher.fetchAll();
         Thread[] threads = new Thread[list.size()];
         SynchronizedTask.resetStopped();
         for (int i = 0; i < list.size(); i++) {

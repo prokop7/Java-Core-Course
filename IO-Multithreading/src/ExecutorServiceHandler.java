@@ -1,4 +1,3 @@
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,11 +17,7 @@ public class ExecutorServiceHandler implements Handler {
     @Override
     public void handle() {
         List<String> list;
-        try {
-            list = fetcher.fetchAll();
-        } catch (IOException ignored) {
-            return;
-        }
+        list = fetcher.fetchAll();
         ExecutorService executor = Executors.newFixedThreadPool(list.size());
         for (String s : list) {
             Algorithm algorithm;

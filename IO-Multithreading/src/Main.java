@@ -1,16 +1,12 @@
 public class Main {
 
     /***
-     * @param args 1) Path to input file
-     *             2) Number of iterations (integer)
-     *             3) Boolean flag for logging
+     * @param inputFiles Array of paths to input file
      */
-    public static void main(String[] args) {
-        String path = args.length > 0 ? args[0] : "./src/input/2.txt";
-        int numIterations = args.length > 1 ? Integer.parseInt(args[1]) : 1;
-        SynchronizedTask.setLogging(args.length <= 2 || Boolean.parseBoolean(args[2]));
-        measure(new MultiThreadHandler(DoubleWordsAlgorithm.class, new SimpleFetcher(path)), numIterations);
-        measure(new ExecutorServiceHandler(DoubleWordsAlgorithm.class, new SimpleFetcher(path)), numIterations);
+    public static void main(String[] inputFiles) {
+        SynchronizedTask.setLogging(true);
+        Handler handler = new ExecutorServiceHandler(DoubleWordsAlgorithm.class, new SimpleFetcher(inputFiles));
+        handler.handle();
     }
 
     /***
