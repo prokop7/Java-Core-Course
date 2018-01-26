@@ -43,7 +43,7 @@ public class TcpSender implements Sender {
             outputStream.writeUTF(String.format("%s: %s", senderName, message));
             outputStream.flush();
         } catch (IOException e) {
-            System.out.printf("Connection aborted: %s:%s\n", receiver.getInetAddress(), receiver.getPort());
+            System.out.printf("Outgoing connection aborted: %s:%s\n", receiver.getInetAddress(), receiver.getPort());
         }
     }
 

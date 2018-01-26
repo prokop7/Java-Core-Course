@@ -46,7 +46,7 @@ public class TcpReceiver implements Receiver {
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
             return dataInputStream.readUTF();
         } catch (IOException e) {
-            System.out.printf("Connection aborted: %s:%s\n", socket.getInetAddress(), socket.getPort());
+            System.out.printf("Incoming connection aborted: %s:%s\n", socket.getInetAddress(), socket.getPort());
             return null;
         }
     }

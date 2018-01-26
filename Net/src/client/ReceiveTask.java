@@ -17,7 +17,7 @@ public class ReceiveTask implements Runnable {
                 String mes = dataInputStream.readUTF();
                 System.out.println(mes);
             } catch (IOException e) {
-                System.out.println("Connection aborted");
+                System.out.println("Connection aborted, probably you need to enter any symbol");
                 return;
             }
         }

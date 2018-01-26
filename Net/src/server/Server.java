@@ -46,6 +46,7 @@ public class Server {
                     if (mes == null) {
                         sender.send(String.format("%s has left chat", account.getLogin()), null);
                         sender.unsubscribe(socket);
+                        account.setSocket(null);
                         return;
                     } else if (Objects.equals(mes, "!psw")) {
                         authenticator.passwordChange(account, receiver.getInputStream(socket), sender.getOutputStream(socket));
