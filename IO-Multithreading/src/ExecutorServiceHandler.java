@@ -18,6 +18,10 @@ public class ExecutorServiceHandler implements Handler {
     public void handle() {
         List<String> list;
         list = fetcher.fetchAll();
+        if (list.size() == 0) {
+            System.out.println("No sources were found");
+            return;
+        }
         ExecutorService executor = Executors.newFixedThreadPool(list.size());
         for (String s : list) {
             Algorithm algorithm;
