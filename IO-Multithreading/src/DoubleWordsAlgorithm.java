@@ -31,6 +31,12 @@ public class DoubleWordsAlgorithm implements Algorithm {
         fillSetWithSeparators(separatorChars);
     }
 
+    public void printResult() {
+        for (String s : wordSet) {
+            System.out.println(s);
+        }
+    }
+
     /***
      * Fill set with allowed letters
      *
@@ -85,7 +91,8 @@ public class DoubleWordsAlgorithm implements Algorithm {
     public boolean processNextSymbol(char c) {
         if (separatorChars.contains(c)) {
             if (buffer.size() > 0)
-                flush();
+                if (!flush())
+                    return false;
         } else if (allowedLetters.contains(c)) {
             buffer.add(c);
         } else
@@ -105,6 +112,7 @@ public class DoubleWordsAlgorithm implements Algorithm {
             return true;
         String newWord = buffer.stream().map(Object::toString).collect(Collectors.joining());
         if (wordSet.contains(newWord)) {
+            System.out.println("Double word:" + newWord);
             return false;
         }
         wordSet.add(newWord);

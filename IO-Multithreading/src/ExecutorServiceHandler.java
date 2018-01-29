@@ -44,6 +44,7 @@ public class ExecutorServiceHandler implements Handler {
 
         try {
             Algorithm algorithm = (Algorithm) algorithmClass.newInstance();
+            algorithm.printResult();
             algorithm.resetAlgorithm();
         } catch (InstantiationException | IllegalAccessException | ClassCastException ignored) {
             return;

@@ -43,7 +43,7 @@ public class SynchronizedTask implements Runnable {
                 return;
             }
         }
-        if (!algorithm.flush()){
+        if (!algorithm.flush()) {
             stopThread();
             return;
         }
