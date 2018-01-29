@@ -13,4 +13,6 @@ public interface SocketWrapper extends Closeable {
     boolean isClosed();
 
     SocketAddress getAddress();
+
+    int getPort();
 }

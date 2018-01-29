@@ -5,4 +5,5 @@ public interface Sender {
     void unsubscribe(SocketWrapper socket);
     void send(String message, Account sender);
     void send(String message, Account sender, SocketWrapper receiver);
+    void send(String message, Account sender, int receiverPort);
 }

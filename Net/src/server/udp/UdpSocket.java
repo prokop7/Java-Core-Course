@@ -2,7 +2,6 @@ package server.udp;
 
 import server.SocketWrapper;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.SocketAddress;
@@ -10,6 +9,7 @@ import java.util.Objects;
 
 public class UdpSocket implements SocketWrapper {
     private DatagramPacket datagramPacket;
+    private boolean closed = false;
 
     UdpSocket(DatagramPacket datagramPacket) {
         this.datagramPacket = datagramPacket;
@@ -46,7 +46,7 @@ public class UdpSocket implements SocketWrapper {
 
     @Override
     public boolean isClosed() {
-        return true;
+        return this.closed;
     }
 
     @Override
@@ -55,7 +55,13 @@ public class UdpSocket implements SocketWrapper {
     }
 
     @Override
-    public void close() throws IOException {
+    public int getPort() {
+        return datagramPacket.getPort();
+    }
+
+    @Override
+    public void close() {
+        this.closed = true;
     }
 
     @Override

@@ -1,37 +1,39 @@
 package server;
 
-import server.udp.UdpChatFactory;
+import server.message_handlers.*;
+import server.tcp.TcpChatFactory;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
     private static ExecutorService executorService = Executors.newFixedThreadPool(10);
-    private static final String pswChangeWord = "::psw";
-    private static final String exitWord = "::exit";
 
     public static void main(String[] args) {
         int port = 8080;
         if (args.length > 0)
             port = Integer.parseInt(args[0]);
-//        ChatFactory tcpFactory = new TcpChatFactory(port);
-//        run(tcpFactory);
-        ChatFactory udpFactory = new UdpChatFactory(port, port + 1);
-        run(udpFactory);
+        ChatFactory tcpFactory = new TcpChatFactory(port);
+        run(tcpFactory);
+//        ChatFactory udpFactory = new UdpChatFactory(port, port + 1);
+//        run(udpFactory);
     }
 
     private static void run(ChatFactory factory) {
         Sender sender;
         Receiver receiver;
         Authenticator authenticator;
+        List<SocketHandler> handlerList;
 
         //TODO eliminate exception
         try {
             receiver = factory.newReceiver();
             sender = factory.newSender();
             authenticator = factory.newAuthenticator(sender);
+            handlerList = getHandlerList(sender, authenticator);
         } catch (IOException e) {
             System.out.println("Server can't be open");
             return;
@@ -47,27 +49,30 @@ public class Server {
                 while (true) {
                     if (account == null)
                         account = authenticator.authenticate(socket);
+
                     if (account == null) {
                         if (socket.isClosed())
                             return;
                         continue;
                     }
+
                     String mes = socket.read();
-                    if (mes == null || Objects.equals(mes, exitWord)) {
-                        sender.send(String.format("%s has left chat", account.getLogin()), null);
-                        sender.unsubscribe(socket);
-                        account.setSocket(null);
-                        return;
-                    } else if (Objects.equals(mes, pswChangeWord)) {
-                        authenticator.passwordChange(account);
-                    } else {
-                        System.out.printf("%s: %s%n", account.getLogin(), mes);
-                        sender.send(mes, account);
+                    for (SocketHandler handler : handlerList) {
+                        if (handler.handle(mes, account))
+                            if (socket.isClosed())
+                                return;
                     }
-                    if (socket.isClosed())
-                        return;
                 }
             });
         }
+    }
+
+    private static List<SocketHandler> getHandlerList(Sender sender, Authenticator authenticator) {
+        List<SocketHandler> handlerList = new ArrayList<>();
+        handlerList.add(new BanHandler(sender));
+        handlerList.add(new ExitHandler(sender));
+        handlerList.add(new PasswordChangingHandler(authenticator));
+        handlerList.add(new BroadcastHandler(sender));
+        return handlerList;
     }
 }

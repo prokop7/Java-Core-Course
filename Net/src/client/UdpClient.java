@@ -1,3 +1,5 @@
+package client;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -5,7 +7,7 @@ import java.net.InetAddress;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Test {
+public class UdpClient {
     public static void main(String[] args) throws IOException {
         Random r = new Random();
         DatagramSocket socket = new DatagramSocket(r.nextInt(10000) + 8000);

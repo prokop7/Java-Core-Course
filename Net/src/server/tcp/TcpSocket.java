@@ -26,7 +26,8 @@ public class TcpSocket implements SocketWrapper {
         return socket.getInetAddress();
     }
 
-    private int getPort() {
+    @Override
+    public int getPort() {
         return socket.getPort();
     }
 

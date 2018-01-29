@@ -43,4 +43,26 @@ public class CommonSender implements Sender {
             System.out.printf("Outgoing connection aborted: %s\n", receiver.getAddress());
         }
     }
+
+    @Override
+    public void send(String message, Account sender, int receiverPort) {
+        SocketWrapper receiver = null;
+        for (SocketWrapper socket : sockets) {
+            if (socket.getPort() == receiverPort) {
+                receiver = socket;
+                break;
+            }
+        }
+        if (receiver == null) {
+            System.out.println("No user with such port");
+            return;
+        }
+
+        try {
+            String senderName = sender == null ? "Server" : sender.getLogin();
+            receiver.write(String.format("%s: %s", senderName, message));
+        } catch (IOException e) {
+            System.out.printf("Outgoing connection aborted: %s\n", receiver.getAddress());
+        }
+    }
 }
