@@ -27,7 +27,6 @@ public class Server {
         Receiver receiver;
         Authenticator authenticator;
 
-        //TODO eliminate exception
         try {
             receiver = factory.newReceiver();
             sender = factory.newSender();
@@ -39,7 +38,6 @@ public class Server {
 
         boolean isStopped = false;
 
-        //TODO make stopping for server
         while (!isStopped) {
             SocketWrapper socket = receiver.acceptNew();
             executorService.submit(() -> {

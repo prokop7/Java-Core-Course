@@ -35,7 +35,6 @@ public class UdpAuthenticator implements Authenticator {
     public void passwordChange(Account account) {
         addressAccount.get(account.getSocket().getAddress()).setPassword(null);
         sender.send("Enter password:", null, account.getSocket());
-        //TODO change password for user
     }
 
     @Override
