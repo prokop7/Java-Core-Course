@@ -59,6 +59,8 @@ public class Server {
                         if (handler.handle(mes, account))
                             if (socket.isClosed())
                                 return;
+                            else
+                                break;
                     }
                 }
             });

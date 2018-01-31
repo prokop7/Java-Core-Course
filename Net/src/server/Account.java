@@ -1,6 +1,7 @@
 package server;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Account {
     private String login;
@@ -48,5 +49,18 @@ public class Account {
 
     public long getLastAction() {
         return lastAction;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return Objects.equals(socket, account.socket);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(socket);
     }
 }

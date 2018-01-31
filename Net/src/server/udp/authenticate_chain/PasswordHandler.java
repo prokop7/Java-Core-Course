@@ -31,7 +31,7 @@ public class PasswordHandler implements AuthenticateStep {
         account.setSocket(socket);
         account.updateActive();
         loginPassword.put(account.getLogin(), account);
-        sender.subscribe(socket);
+        sender.subscribe(account);
         sender.send("Welcome " + account.getLogin(), null);
         return true;
     }
