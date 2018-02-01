@@ -2,6 +2,7 @@ package server.message_handlers;
 
 import server.Account;
 import server.Sender;
+import server.SocketHandler;
 
 public class BroadcastHandler implements SocketHandler {
     private Sender sender;

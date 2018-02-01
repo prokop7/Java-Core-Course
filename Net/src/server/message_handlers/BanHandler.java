@@ -2,6 +2,7 @@ package server.message_handlers;
 
 import server.Account;
 import server.Sender;
+import server.SocketHandler;
 
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +28,7 @@ public class BanHandler implements SocketHandler {
             sender.send("You have been banned", null, account.getSocket());
             return true;
         }
-        Matcher m = Pattern.compile("::ban (\\d+) (\\d+)").matcher(message);
+        Matcher m = Pattern.compile("::ban (\\S+) (\\d+)").matcher(message);
         if (!m.matches())
             return false;
         int port = Integer.parseInt(m.group(1));
