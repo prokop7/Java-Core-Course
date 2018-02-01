@@ -41,7 +41,7 @@ public class LoginHandler implements AuthenticateStep {
                     return true;
                 }
                 sender.send("You have been disconnected due timeout", null, cachedAccount.getSocket());
-                sender.unsubscribe(cachedAccount.getSocket());
+                sender.unsubscribe(cachedAccount);
                 cachedAccount.setSocket(null);
             }
             account.setLogin(login);

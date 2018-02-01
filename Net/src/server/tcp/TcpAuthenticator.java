@@ -46,7 +46,7 @@ public class TcpAuthenticator implements Authenticator {
                     loginPassword.put(login, account);
                 }
                 account.setSocket(socket);
-                sender.subscribe(socket);
+                sender.subscribe(account);
                 sender.send("Welcome " + account.getLogin(), null);
                 return account;
             }

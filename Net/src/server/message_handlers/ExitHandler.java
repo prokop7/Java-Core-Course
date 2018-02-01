@@ -19,7 +19,7 @@ public class ExitHandler implements SocketHandler {
         if (message != null && !Objects.equals(message, exitWord))
             return false;
         sender.send(String.format("%s has left chat", account.getLogin()), null);
-        sender.unsubscribe(account.getSocket());
+        sender.unsubscribe(account);
         account.setSocket(null);
         return true;
     }
