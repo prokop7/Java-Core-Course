@@ -4,14 +4,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class ExecutorServiceHandler implements Handler {
+    private AlgorithmFactory factory;
     // Algorithm which will process strings
     private Class<?> algorithmClass;
     // Fetch algorithm
     private Fetcher fetcher;
 
-    ExecutorServiceHandler(Class<?> algorithmClass, Fetcher fetcher) {
+    ExecutorServiceHandler(Fetcher fetcher, Class<?> algorithmClass, AlgorithmFactory factory) {
         this.algorithmClass = algorithmClass;
         this.fetcher = fetcher;
+        this.factory = factory;
     }
 
     @Override
@@ -26,7 +28,7 @@ public class ExecutorServiceHandler implements Handler {
         for (String s : list) {
             Algorithm algorithm;
             try {
-                algorithm = (Algorithm) algorithmClass.newInstance();
+                algorithm = factory.newAlgorithm(algorithmClass);
             } catch (InstantiationException | IllegalAccessException | ClassCastException e) {
                 System.out.printf("Cannot create instance of %s%n", algorithmClass.getName());
                 return;
