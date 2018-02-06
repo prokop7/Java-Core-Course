@@ -1,10 +1,8 @@
 package server;
 
-import server.message_handlers.*;
 import server.udp.UdpChatFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,7 +30,7 @@ public class Server {
             receiver = factory.newReceiver();
             sender = factory.newSender();
             authenticator = factory.newAuthenticator(sender);
-            handlerList = getHandlerList(sender, authenticator);
+            handlerList = factory.getHandlerList(sender, authenticator);
         } catch (IOException e) {
             System.out.println("Server can't be open");
             return;
@@ -67,14 +65,5 @@ public class Server {
                 }
             });
         }
-    }
-
-    private static List<SocketHandler> getHandlerList(Sender sender, Authenticator authenticator) {
-        List<SocketHandler> handlerList = new ArrayList<>();
-        handlerList.add(new BanHandler(sender));
-        handlerList.add(new ExitHandler(sender));
-        handlerList.add(new PasswordChangingHandler(authenticator));
-        handlerList.add(new BroadcastHandler(sender));
-        return handlerList;
     }
 }

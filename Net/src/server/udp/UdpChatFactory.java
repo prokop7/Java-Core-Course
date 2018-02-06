@@ -4,11 +4,9 @@ import server.Authenticator;
 import server.ChatFactory;
 import server.Receiver;
 import server.Sender;
-import server.message_handlers.SocketHandler;
 
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.List;
 
 public class UdpChatFactory implements ChatFactory {
     private int portIncoming;
