@@ -13,14 +13,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class UdpAuthenticator implements Authenticator {
     private ConcurrentHashMap<SocketAddress, Account> addressAccount = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, Account> loginPassword = new ConcurrentHashMap<>();
     private List<AuthenticateStep> chain = new ArrayList<>();
     private Sender sender;
 
 
     UdpAuthenticator(Sender sender, long timeout) {
+        ConcurrentHashMap<String, Account> loginPassword = new ConcurrentHashMap<>();
         chain.add(new GratitudeHandler(addressAccount, sender));
-        chain.add(new LoginHandler(addressAccount, loginPassword, sender, timeout));
+        chain.add(new LoginHandler(loginPassword, sender, timeout));
         chain.add(new PasswordHandler(loginPassword, sender));
         chain.add(new NullSocketHandler(addressAccount, sender));
         chain.add(new ValidAccountHandler(loginPassword));
@@ -41,6 +41,7 @@ public class UdpAuthenticator implements Authenticator {
     public Account authenticate(SocketWrapper socket) {
         SocketAddress address = socket.getAddress();
         Account account = addressAccount.get(address);
+        socket.close();
         for (AuthenticateStep step : chain) {
             if (step.handle(account, socket))
                 return null;

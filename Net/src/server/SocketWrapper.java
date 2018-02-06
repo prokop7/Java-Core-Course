@@ -31,4 +31,5 @@ public interface SocketWrapper extends Closeable {
 
     int getPort();
     boolean isClosed();
+    void close();
 }

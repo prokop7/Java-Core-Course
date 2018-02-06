@@ -4,21 +4,17 @@ import server.Account;
 import server.Sender;
 import server.SocketWrapper;
 
-import java.net.SocketAddress;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LoginHandler implements AuthenticateStep {
-    private final ConcurrentHashMap<SocketAddress, Account> addressAccount;
     private final ConcurrentHashMap<String, Account> loginPassword;
     private final Sender sender;
     private long timeout;
 
-    public LoginHandler(ConcurrentHashMap<SocketAddress, Account> addressAccount,
-                        ConcurrentHashMap<String, Account> loginPassword,
+    public LoginHandler(ConcurrentHashMap<String, Account> loginPassword,
                         Sender sender,
                         long timeout) {
-        this.addressAccount = addressAccount;
         this.loginPassword = loginPassword;
         this.sender = sender;
         this.timeout = timeout;

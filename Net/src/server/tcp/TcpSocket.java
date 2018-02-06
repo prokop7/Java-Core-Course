@@ -58,10 +58,14 @@ public class TcpSocket implements SocketWrapper {
     }
 
     @Override
-    public void close() throws IOException {
-        this.dataInputStream.close();
-        this.dataOutputStream.close();
-        this.socket.close();
+    public void close() {
+        try {
+            this.dataInputStream.close();
+            this.dataOutputStream.close();
+            this.socket.close();
+        } catch (IOException e) {
+            System.out.println("Connection aborted");
+        }
     }
 
     @Override

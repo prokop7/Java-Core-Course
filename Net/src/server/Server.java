@@ -1,7 +1,7 @@
 package server;
 
 import server.message_handlers.*;
-import server.tcp.TcpChatFactory;
+import server.udp.UdpChatFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,10 +16,10 @@ public class Server {
         int port = 8080;
         if (args.length > 0)
             port = Integer.parseInt(args[0]);
-        ChatFactory tcpFactory = new TcpChatFactory(port);
-        run(tcpFactory);
-//        ChatFactory udpFactory = new UdpChatFactory(port, port + 1);
-//        run(udpFactory);
+//        ChatFactory tcpFactory = new TcpChatFactory(port);
+//        run(tcpFactory);
+        ChatFactory udpFactory = new UdpChatFactory(port, port + 1);
+        run(udpFactory);
     }
 
     private static void run(ChatFactory factory) {
@@ -62,6 +62,8 @@ public class Server {
                             else
                                 break;
                     }
+                    if (socket.isClosed())
+                        return;
                 }
             });
         }
