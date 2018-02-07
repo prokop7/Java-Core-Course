@@ -7,8 +7,8 @@ public class Main {
         SynchronizedTask.setLogging(true);
         Handler handler = new ExecutorServiceHandler(
                 new SimpleFetcher(inputFiles),
-                DoubleWordsAlgorithm.class,
-                new SimpleAlgorithmCreator());
+                Algorithm.class,
+                new ProxyAlgorithmFactory("C:\\Users\\proko\\Desktop\\ClassLoaders\\"));
         handler.handle();
     }
 

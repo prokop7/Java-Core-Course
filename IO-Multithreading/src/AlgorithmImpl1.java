@@ -19,14 +19,15 @@ import java.util.stream.Collectors;
  *      </quote>
  * @see Algorithm
  */
-public class DoubleWordsAlgorithm implements Algorithm {
+public class AlgorithmImpl1 implements Algorithm {
     private Set<Character> allowedLetters = new HashSet<>();
     // Set of separators
     private Set<Character> separatorChars = new HashSet<>();
     private static ConcurrentHashMap.KeySetView<String, Boolean> wordSet = ConcurrentHashMap.newKeySet();
     private List<Character> buffer = new ArrayList<>();
+    private boolean isCutted = false;
 
-    DoubleWordsAlgorithm() {
+    public AlgorithmImpl1() {
         fillSetWithLetters(allowedLetters);
         fillSetWithSeparators(separatorChars);
     }
@@ -90,11 +91,16 @@ public class DoubleWordsAlgorithm implements Algorithm {
     @Override
     public boolean processNextSymbol(char c) {
         if (separatorChars.contains(c)) {
+            isCutted = false;
             if (buffer.size() > 0)
-                if (!flush())
-                    return false;
-        } else if (allowedLetters.contains(c)) {
+                return flush();
+        } else if (buffer.size() == 9) {
             buffer.add(c);
+            isCutted = true;
+            return flush();
+        } else if (allowedLetters.contains(c)) {
+            if (!isCutted)
+                buffer.add(c);
         } else
             return false;
         return true;
