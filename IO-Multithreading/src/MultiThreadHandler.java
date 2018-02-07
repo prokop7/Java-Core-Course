@@ -36,13 +36,7 @@ public class MultiThreadHandler implements Handler {
         SynchronizedTask.resetStopped();
         for (int i = 0; i < list.size(); i++) {
             String s = list.get(i);
-            Algorithm algorithm;
-            try {
-                algorithm = factory.newAlgorithm(algorithmClass);
-            } catch (InstantiationException | IllegalAccessException | ClassCastException e) {
-                System.out.printf("Cannot create instance of %s%n", algorithmClass.getName());
-                return;
-            }
+            Algorithm algorithm = factory.newAlgorithm();
             Thread thread = new Thread(new SynchronizedTask(algorithm, s), String.format("Thread %d", i));
             threads[i] = thread;
             thread.start();

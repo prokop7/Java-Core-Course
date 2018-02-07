@@ -26,13 +26,7 @@ public class ExecutorServiceHandler implements Handler {
         }
         ExecutorService executor = Executors.newFixedThreadPool(list.size());
         for (String s : list) {
-            Algorithm algorithm;
-            try {
-                algorithm = factory.newAlgorithm(algorithmClass);
-            } catch (InstantiationException | IllegalAccessException | ClassCastException e) {
-                System.out.printf("Cannot create instance of %s%n", algorithmClass.getName());
-                return;
-            }
+            Algorithm algorithm = factory.newAlgorithm();
             executor.submit(new SynchronizedTask(algorithm, s));
         }
         // Join all threads

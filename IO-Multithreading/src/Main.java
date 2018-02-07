@@ -8,7 +8,7 @@ public class Main {
         Handler handler = new ExecutorServiceHandler(
                 new SimpleFetcher(inputFiles),
                 DoubleWordsAlgorithm.class,
-                new SimpleCreator());
+                new SimpleAlgorithmCreator());
         handler.handle();
     }
 
