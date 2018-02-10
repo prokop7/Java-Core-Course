@@ -19,17 +19,19 @@ public class AlgorithmProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws
             InvocationTargetException,
-            IllegalAccessException {
+            IllegalAccessException,
+            IOException {
         String name = "AlgorithmImpl";
         if (Files.exists(Paths.get(filePath + name + 1 + ".class")))
             name += 1;
         else
             name += 2;
-        FileTime lastModifiedTime = null;
+        FileTime lastModifiedTime;
         try {
             lastModifiedTime = Files.getLastModifiedTime(Paths.get(filePath + name + ".class"));
         } catch (IOException e) {
             System.out.printf("Can't find a class %s%s.class%n", filePath, name);
+            throw e;
         }
 
         if (algorithm == null || lastModified != lastModifiedTime.toMillis()) {
