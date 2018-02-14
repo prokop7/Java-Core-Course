@@ -1,13 +1,9 @@
-package server.tcp;
-
-import server.Account;
-import server.Sender;
-import server.SocketWrapper;
+package server;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class CommonSender implements Sender {
+public abstract class CommonSender implements Sender {
     private final ConcurrentHashMap.KeySetView<Account, Boolean> accounts = ConcurrentHashMap.newKeySet();
 
     @Override
@@ -41,16 +37,6 @@ public class CommonSender implements Sender {
     }
 
     @Override
-    public void send(String message, Account sender, SocketWrapper receiver) {
-        try {
-            String senderName = sender == null ? "Server" : sender.getLogin();
-            receiver.write(String.format("%s: %s", senderName, message));
-        } catch (IOException e) {
-            System.out.printf("Outgoing connection aborted: %s\n", receiver.getAddress());
-        }
-    }
-
-    @Override
     public void send(String message, Account sender, String login) {
         Account receiver = findByLogin(login);
         if (receiver == null) {
@@ -67,14 +53,13 @@ public class CommonSender implements Sender {
 
     @Override
     public Account findByLogin(String login) {
-        Account account = null;
+        Account account;
         synchronized (accounts) {
-            for (Account a : accounts) {
-                if (a.getLogin().equals(login)) {
-                    account = a;
-                    break;
-                }
-            }
+            //Here is stream API with lambda
+            account = accounts.stream()
+                    .filter(a -> a.getLogin().equals(login))
+                    .findFirst()
+                    .orElse(null);
         }
         return account;
     }

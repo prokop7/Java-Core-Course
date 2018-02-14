@@ -1,9 +1,6 @@
 package server.tcp;
 
-import server.Authenticator;
-import server.ChatFactory;
-import server.Receiver;
-import server.Sender;
+import server.*;
 
 import java.io.IOException;
 
@@ -21,7 +18,7 @@ public class TcpChatFactory implements ChatFactory {
 
     @Override
     public Sender newSender() {
-        return new CommonSender();
+        return new TcpSender();
     }
 
     @Override

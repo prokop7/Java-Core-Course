@@ -1,7 +1,7 @@
 package server.udp;
 
 import server.Account;
-import server.tcp.CommonSender;
+import server.CommonSender;
 import server.SocketWrapper;
 
 import java.io.IOException;
