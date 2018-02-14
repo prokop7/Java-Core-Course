@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CommonSender implements Sender {
-    private ConcurrentHashMap.KeySetView<Account, Boolean> accounts = ConcurrentHashMap.newKeySet();
+    private final ConcurrentHashMap.KeySetView<Account, Boolean> accounts = ConcurrentHashMap.newKeySet();
 
     @Override
     protected void finalize() throws Throwable {
@@ -18,19 +18,25 @@ public class CommonSender implements Sender {
 
     @Override
     public void subscribe(Account socket) {
-        accounts.add(socket);
+        synchronized (accounts) {
+            accounts.add(socket);
+        }
     }
 
     @Override
     public void unsubscribe(Account socket) {
-        accounts.remove(socket);
+        synchronized (accounts) {
+            accounts.remove(socket);
+        }
     }
 
     @Override
     public void send(String message, Account sender) {
-        for (Account receiver : accounts) {
-            if (sender == null || !receiver.getSocket().equals(sender.getSocket()))
-                send(message, sender, receiver.getSocket());
+        synchronized (accounts) {
+            for (Account receiver : accounts) {
+                if (sender == null || !receiver.getSocket().equals(sender.getSocket()))
+                    send(message, sender, receiver.getSocket());
+            }
         }
     }
 
@@ -62,10 +68,12 @@ public class CommonSender implements Sender {
     @Override
     public Account findByLogin(String login) {
         Account account = null;
-        for (Account a : accounts) {
-            if (a.getLogin().equals(login)) {
-                account = a;
-                break;
+        synchronized (accounts) {
+            for (Account a : accounts) {
+                if (a.getLogin().equals(login)) {
+                    account = a;
+                    break;
+                }
             }
         }
         return account;
