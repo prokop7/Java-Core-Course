@@ -1,18 +1,16 @@
 <%--
   Created by IntelliJ IDEA.
-  User: Monopolis
-  Date: 2/28/2018
-  Time: 20:46
+  User: proko
+  Date: 3/1/2018
+  Time: 19:34
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Hello</title>
+    <title>Random number</title>
 </head>
 <body>
-    ${userName}
-    ${player}
-    Servlet.
+${randomNumber}
 </body>
 </html>

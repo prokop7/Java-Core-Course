@@ -6,15 +6,27 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Random;
 
-@WebServlet(name = "myHome", urlPatterns = {"/home"})
+@WebServlet(name = "default", urlPatterns = {"/"})
 public class HomeServlet extends HttpServlet {
+    private Random random;
+
+    @Override
+    public void init() throws ServletException {
+        random = new Random();
+        super.init();
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("userName", "123123");
+        String s = req.getAuthType();
+        System.out.println(s);
+        s = req.getRemoteUser();
+        System.out.println(s);
 
         getServletContext()
-                .getRequestDispatcher("/home.jsp")
+                .getRequestDispatcher("/default.jsp")
                 .forward(req, resp);
     }
 }
