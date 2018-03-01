@@ -24,3 +24,5 @@ hs_err_pid*
 Multithreading/out/
 Multithreading/src/input/1.txt
 Multithreading/src/input/3.txt
+wishlist/.gradle/
+wishlist/build/
