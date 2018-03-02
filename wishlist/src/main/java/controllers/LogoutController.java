@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "LoginController", urlPatterns = {"/logout"})
+@WebServlet(name = "LogoutController", urlPatterns = {"/logout"})
 public class LogoutController extends HttpServlet {
     private AuthorizationService authService;
 
@@ -20,7 +20,8 @@ public class LogoutController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        authService.logOut((String) req.getSession().getAttribute("token"));
+        authService.logout((String) req.getSession().getAttribute("token"));
+        //TODO process error
         resp.sendRedirect("/authentication.jsp");
     }
 }

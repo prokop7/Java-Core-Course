@@ -26,11 +26,14 @@ public class AuthorizationFilter implements Filter {
         HttpSession session = req.getSession();
         if (session != null) {
             String token = (String) session.getAttribute("token");
-            String userLogin = authService.authorize(token);
-            logger.debug(String.format("Login for token '%s':'%s'", userLogin, token));
-            if (userLogin != null) {
-                chain.doFilter(request, response);
-                return;
+            if (token != null)
+            {
+                String userLogin = authService.authorize(token);
+                logger.debug(String.format("Login for token '%s':'%s'", userLogin, token));
+                if (userLogin != null) {
+                    chain.doFilter(request, response);
+                    return;
+                }
             }
         }
         logger.debug(String.format("Redirected to '%s'", redirectAddress));
