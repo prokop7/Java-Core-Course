@@ -12,10 +12,17 @@
 </head>
 <body>
 ${message}
+<br>
 <form method="post" action="${pageContext.request.contextPath}/login">
     <input type="text" title="login" name="login">
     <input type="password" title="password" name="password">
-    <input type="submit" value="Enter">
+    <input type="submit" value="Login">
+</form>
+<br>
+<form method="post" action="${pageContext.request.contextPath}/register">
+    <input type="text" title="login" name="login">
+    <input type="password" title="password" name="password">
+    <input type="submit" value="Register">
 </form>
 </body>
 </html>

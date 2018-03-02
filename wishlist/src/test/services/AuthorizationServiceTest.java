@@ -1,17 +1,17 @@
-package dao;
+package services;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class PostgreProviderTest {
+class AuthorizationServiceTest {
 
-    private DatabaseProvider testObject;
+    private AuthorizationService testObject;
 
     @BeforeEach
     void setUp() {
-        this.testObject = new PostgreProvider();
+        this.testObject = new AuthorizationService();
     }
 
     @AfterEach

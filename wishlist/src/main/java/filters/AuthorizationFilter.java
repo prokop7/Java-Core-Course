@@ -1,6 +1,8 @@
 package filters;
 
-import dao.PostgreProvider;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import services.AuthorizationService;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -9,11 +11,13 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class AuthorizationFilter implements Filter {
-    private PostgreProvider dao;
+    private AuthorizationService authService;
+    private static Logger logger = LogManager.getLogger();
+    private static final String redirectAddress = "/authentication.jsp";
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        this.dao = new PostgreProvider();
+    public void init(FilterConfig filterConfig) {
+        this.authService = new AuthorizationService();
     }
 
     @Override
@@ -22,16 +26,18 @@ public class AuthorizationFilter implements Filter {
         HttpSession session = req.getSession();
         if (session != null) {
             String token = (String) session.getAttribute("token");
-            if (dao.authorize(token)) {
+            String userLogin = authService.authorize(token);
+            logger.debug(String.format("Login for token '%s':'%s'", userLogin, token));
+            if (userLogin != null) {
                 chain.doFilter(request, response);
                 return;
             }
         }
-        ((HttpServletResponse) response).sendError(403);
+        logger.debug(String.format("Redirected to '%s'", redirectAddress));
+        ((HttpServletResponse) response).sendRedirect(redirectAddress);
     }
 
     @Override
     public void destroy() {
-
     }
 }

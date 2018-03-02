@@ -1,11 +1,18 @@
 package dao;
 
 public interface DatabaseProvider {
-    String authenticate(String login, String password);
 
-    boolean authorize(String token);
+    boolean containsLogin(String login);
 
-    boolean register(String login, String password);
+    boolean checkPassword(String login, String password);
+
+    void assignToken(String login, String token);
+
+    void addRecord(String login, String password);
+
+    void removeToken(String token);
+
+    String getLoginByToken(String token);
 
     void reset();
 }

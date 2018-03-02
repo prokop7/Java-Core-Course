@@ -15,7 +15,9 @@
 <body>
 Hello ${login}
 Your random number - ${randomNumber}
-<a href="${pageContext.request.contextPath}/authentication.jsp">Login</a>
-<a href="${pageContext.request.contextPath}/registration.jsp">Register</a>
+<br>
+<form method="post" action="${pageContext.request.contextPath}/logout">
+    <input type="submit" value="Logout">
+</form>
 </body>
 </html>
