@@ -1,21 +1,20 @@
 package dao;
 
-import dao.exceptions.QueryExecutionException;
-import dao.exceptions.StatementExecutionException;
+import dao.exceptions.SqlExecutionException;
 
 public interface DatabaseProvider {
 
-    boolean containsLogin(String login) throws QueryExecutionException;
+    boolean containsLogin(String login) throws SqlExecutionException;
 
-    boolean checkPassword(String login, String password) throws QueryExecutionException;
+    boolean checkPassword(String login, String password) throws SqlExecutionException;
 
-    void assignToken(String login, String token) throws StatementExecutionException;
+    void assignToken(String login, String token) throws SqlExecutionException;
 
-    void addRecord(String login, String password) throws StatementExecutionException;
+    void addRecord(String login, String password) throws SqlExecutionException;
 
-    void removeToken(String token) throws StatementExecutionException;
+    void removeToken(String token) throws SqlExecutionException;
 
-    String getLoginByToken(String token) throws QueryExecutionException;
+    String getLoginByToken(String token) throws SqlExecutionException;
 
     void reset();
 }

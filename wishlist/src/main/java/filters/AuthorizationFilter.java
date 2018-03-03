@@ -1,5 +1,6 @@
 package filters;
 
+import controllers.ControllerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.AuthorizationService;
@@ -17,7 +18,7 @@ public class AuthorizationFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
-        this.authService = new AuthorizationService();
+        this.authService = ControllerHelper.initAuthService();
     }
 
     @Override

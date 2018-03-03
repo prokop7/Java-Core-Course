@@ -3,26 +3,28 @@ package services;
 import dao.DatabaseProvider;
 import dao.PostrgeProvider;
 import dao.exceptions.DaoException;
-import dao.exceptions.QueryExecutionException;
-import dao.exceptions.StatementExecutionException;
+import dao.exceptions.SqlExecutionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.exceptions.*;
 
 public class AuthorizationService {
     private DatabaseProvider dao;
     private static final Logger logger = LogManager.getLogger(AuthorizationService.class);
 
-    public AuthorizationService() {
+    public AuthorizationService() throws DbConnectionException {
         int repeatCount = 3;
         while (repeatCount-- > 0)
             try {
                 this.dao = PostrgeProvider.getProvider();
                 break;
             } catch (DaoException e) {
-                if (repeatCount == 0)
+                if (repeatCount == 0) {
                     logger.fatal(e);
-                else
+                    throw new DbConnectionException("Can't establish connection");
+                } else {
                     logger.error(e);
+                }
             }
 
     }
@@ -38,7 +40,7 @@ public class AuthorizationService {
                 dao.assignToken(login, token);
                 return token;
             }
-        } catch (QueryExecutionException | StatementExecutionException e) {
+        } catch (SqlExecutionException e) {
             logger.error("Can't connect to the database");
             return null;
         }
@@ -48,28 +50,31 @@ public class AuthorizationService {
         return login + password;
     }
 
-    public boolean register(String login, String password) {
+    public void register(String login, String password) throws
+            NullFieldException,
+            EmptyFieldException,
+            DuplicatedLoginException,
+            InternalDbException {
         if (login == null || password == null)
-            return false;
+            throw new NullFieldException();
         login = login.trim();
         password = password.trim();
         if (login.isEmpty() || password.isEmpty())
-            return false;
+            throw new EmptyFieldException();
         try {
             if (dao.containsLogin(login))
-                return false;
+                throw new DuplicatedLoginException();
             dao.addRecord(login, password);
-            return true;
-        } catch (QueryExecutionException | StatementExecutionException e) {
+        } catch (SqlExecutionException e) {
             logger.error("Can't connect to the database");
-            return false;
+            throw new InternalDbException();
         }
     }
 
     public String authorize(String token) {
         try {
             return dao.getLoginByToken(token);
-        } catch (QueryExecutionException e) {
+        } catch (SqlExecutionException e) {
             logger.error("Can't connect to the database");
             return null;
         }
@@ -79,7 +84,7 @@ public class AuthorizationService {
         try {
             dao.removeToken(token);
             return true;
-        } catch (StatementExecutionException e) {
+        } catch (SqlExecutionException e) {
             logger.error("Can't connect to the database");
             return false;
         }

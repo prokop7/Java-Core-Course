@@ -1,5 +1,7 @@
 package controllers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import services.AuthorizationService;
 
 import javax.servlet.ServletException;
@@ -13,10 +15,11 @@ import java.io.IOException;
 @WebServlet(name = "LoginController", urlPatterns = {"/login"})
 public class LoginController extends HttpServlet {
     private AuthorizationService authService;
+    private Logger logger = LogManager.getLogger(RegisterController.class);
 
     @Override
     public void init() {
-        this.authService = new AuthorizationService();
+        this.authService = ControllerHelper.initAuthService();
     }
 
     @Override

@@ -13,7 +13,7 @@ public class PostrgeProvider implements DatabaseProvider {
 
     public static PostrgeProvider getProvider() throws DaoException {
         if (instance == null)
-            instance = new PostrgeProvider("local.db");
+            instance = new PostrgeProvider("C:\\Users\\Monopolis\\Desktop\\local.db");
         return instance;
     }
 
@@ -56,13 +56,13 @@ public class PostrgeProvider implements DatabaseProvider {
     }
 
     @Override
-    public boolean containsLogin(String login) throws QueryExecutionException {
+    public boolean containsLogin(String login) throws SqlExecutionException {
         String res = getLoginBySql(String.format("SELECT login FROM users WHERE login='%s' LIMIT 1", login));
         return res != null;
     }
 
     @Override
-    public boolean checkPassword(String login, String password) throws QueryExecutionException {
+    public boolean checkPassword(String login, String password) throws SqlExecutionException {
         String res = getLoginBySql(
                 String.format("SELECT login FROM users WHERE login='%s' AND password='%s' LIMIT 1",
                         login,
@@ -70,9 +70,9 @@ public class PostrgeProvider implements DatabaseProvider {
         return res != null;
     }
 
-    private String getLoginBySql(String sql) throws QueryExecutionException {
+    private String getLoginBySql(String sql) throws SqlExecutionException {
         String resultLogin = null;
-        try (ResultSet set = executeQuery(sql)) {
+        try (ResultSet set = execute(sql, true)) {
             if (set != null) {
                 try {
                     if (set.next())
@@ -90,22 +90,22 @@ public class PostrgeProvider implements DatabaseProvider {
     }
 
     @Override
-    public void assignToken(String login, String token) throws StatementExecutionException {
-        executeStatement(String.format("UPDATE users SET token='%s' WHERE login='%s'", token, login));
+    public void assignToken(String login, String token) throws SqlExecutionException {
+        execute(String.format("UPDATE users SET token='%s' WHERE login='%s'", token, login), false);
     }
 
     @Override
-    public void addRecord(String login, String password) throws StatementExecutionException {
-        executeStatement(String.format("INSERT INTO users (login, password) VALUES (\"%s\", \"%s\")", login, password));
+    public void addRecord(String login, String password) throws SqlExecutionException {
+        execute(String.format("INSERT INTO users (login, password) VALUES (\"%s\", \"%s\")", login, password), false);
     }
 
     @Override
-    public void removeToken(String token) throws StatementExecutionException {
-        executeStatement(String.format("UPDATE users SET token=NULL WHERE token=\"%s\"", token));
+    public void removeToken(String token) throws SqlExecutionException {
+        execute(String.format("UPDATE users SET token=NULL WHERE token=\"%s\"", token), false);
     }
 
     @Override
-    public String getLoginByToken(String token) throws QueryExecutionException {
+    public String getLoginByToken(String token) throws SqlExecutionException {
         return getLoginBySql(String.format("SELECT login FROM users WHERE token=\"%s\"", token));
     }
 
@@ -114,33 +114,41 @@ public class PostrgeProvider implements DatabaseProvider {
 
     }
 
-    private ResultSet executeQuery(String sql) throws QueryExecutionException {
+//    private ResultSet executeQuery(String sql) throws SqlExecutionException {
+//        int repeatNumber = 3;
+//        while (repeatNumber > 0)
+//            try {
+//                Statement statement = connection.createStatement();
+//                return execute(statement, sql, true);
+//            } catch (SQLException e) {
+//                repeatNumber--;
+//                logger.error(e);
+//            }
+//        throw new SqlExecutionException();
+//    }
+
+    private ResultSet execute(String sql, boolean isQuery) throws SqlExecutionException {
         int repeatNumber = 3;
+        Statement statement = null;
         while (repeatNumber > 0)
             try {
-                Statement statement = connection.createStatement();
-                return execute(statement, sql, true);
+                statement = connection.createStatement();
+                break;
             } catch (SQLException e) {
                 repeatNumber--;
                 logger.error(e);
+                if (repeatNumber == 0)
+                    throw new SqlExecutionException();
             }
-        throw new QueryExecutionException();
+            
+        try {
+            return execute(statement, sql, isQuery);
+        } catch (SQLException ignored) {
+            throw new SqlExecutionException();
+        }
     }
 
-    private void executeStatement(String sql) throws StatementExecutionException {
-        int repeatNumber = 3;
-        while (repeatNumber > 0)
-            try (Statement statement = connection.createStatement()) {
-                execute(statement, sql, false);
-                return;
-            } catch (SQLException e) {
-                repeatNumber--;
-                logger.error(e);
-            }
-        throw new StatementExecutionException();
-    }
-
-    private ResultSet execute(Statement statement, String sql, boolean isQuery) {
+    private ResultSet execute(Statement statement, String sql, boolean isQuery) throws SQLException {
         int repeatNumber = 3;
         while (repeatNumber > 0)
             try {
@@ -151,7 +159,9 @@ public class PostrgeProvider implements DatabaseProvider {
                 return null;
             } catch (SQLException e) {
                 repeatNumber--;
-                logger.error(e);
+                logger.error(e + ". SQL=" + sql);
+                if (repeatNumber == 0)
+                    throw e;
             }
         return null;
     }
