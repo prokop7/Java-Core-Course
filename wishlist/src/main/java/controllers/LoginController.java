@@ -3,6 +3,8 @@ package controllers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.AuthorizationService;
+import services.exceptions.EmptyFieldException;
+import services.exceptions.NullFieldException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,7 +28,16 @@ public class LoginController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         String login = req.getParameter("login");
         String password = req.getParameter("password");
-        String token = authService.authenticate(login, password);
+        String token;
+        try {
+            token = authService.authenticate(login, password);
+        } catch (NullFieldException e) {
+            sendMessage("Login or password is null", req, resp);
+            return;
+        } catch (EmptyFieldException e) {
+            sendMessage("Login or password is empty", req, resp);
+            return;
+        }
 
         if (token != null) {
             HttpSession session = req.getSession();
@@ -38,6 +49,14 @@ public class LoginController extends HttpServlet {
             return;
         }
         req.setAttribute("message", "Wrong combination of login and password");
+        ControllerHelper.forward(this, req, resp, "/authentication.jsp");
+    }
+
+    private void sendMessage(
+            String message,
+            HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
+        req.setAttribute("message", message);
         ControllerHelper.forward(this, req, resp, "/authentication.jsp");
     }
 }

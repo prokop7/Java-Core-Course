@@ -6,24 +6,24 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 
-public class PostrgeProvider implements DatabaseProvider {
-    private static PostrgeProvider instance = null;
-    private static final Logger logger = LogManager.getLogger(PostrgeProvider.class);
+public class SqliteProvider implements DatabaseProvider {
+    private static SqliteProvider instance = null;
+    private static final Logger logger = LogManager.getLogger(SqliteProvider.class);
     private Connection connection;
 
-    public static PostrgeProvider getProvider() throws DaoException {
+    public static SqliteProvider getProvider() throws DaoException {
         if (instance == null)
-            instance = new PostrgeProvider("C:\\Users\\Monopolis\\Desktop\\local.db");
+            instance = new SqliteProvider("C:\\Users\\Monopolis\\Desktop\\local.db");
         return instance;
     }
 
-    public static PostrgeProvider getProvider(String dbName) throws DaoException {
+    public static SqliteProvider getProvider(String dbName) throws DaoException {
         if (instance == null)
-            instance = new PostrgeProvider(dbName);
+            instance = new SqliteProvider(dbName);
         return instance;
     }
 
-    private PostrgeProvider(String dbName) throws DatabaseOpenException, JdbcDriverNotFoundException {
+    private SqliteProvider(String dbName) throws DatabaseOpenException, JdbcDriverNotFoundException {
         Statement statement;
         try {
             DriverManager.registerDriver(new org.sqlite.JDBC());
@@ -110,22 +110,9 @@ public class PostrgeProvider implements DatabaseProvider {
     }
 
     @Override
-    public void reset() {
-
+    public void reset() throws SqlExecutionException {
+        execute("DROP TABLE users", false);
     }
-
-//    private ResultSet executeQuery(String sql) throws SqlExecutionException {
-//        int repeatNumber = 3;
-//        while (repeatNumber > 0)
-//            try {
-//                Statement statement = connection.createStatement();
-//                return execute(statement, sql, true);
-//            } catch (SQLException e) {
-//                repeatNumber--;
-//                logger.error(e);
-//            }
-//        throw new SqlExecutionException();
-//    }
 
     private ResultSet execute(String sql, boolean isQuery) throws SqlExecutionException {
         int repeatNumber = 3;

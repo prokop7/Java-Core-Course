@@ -27,7 +27,6 @@ public class RegisterController extends HttpServlet {
             throws ServletException, IOException {
         String login = req.getParameter("login");
         String password = req.getParameter("password");
-
         try {
             authService.register(login, password);
             sendMessage("Successfully registered", req, resp);
