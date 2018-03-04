@@ -18,14 +18,14 @@ public class AuthorizationService {
         this(null);
     }
 
-    public AuthorizationService(String dbName) throws DbConnectionException  {
+    public AuthorizationService(String dbName) throws DbConnectionException {
         int repeatCount = 3;
         while (repeatCount-- > 0)
             try {
-            if (dbName == null)
-                this.dao = SqliteProvider.getProvider();
-            else
-                this.dao = SqliteProvider.getProvider(dbName);
+                if (dbName == null)
+                    this.dao = SqliteProvider.getProvider();
+                else
+                    this.dao = SqliteProvider.getProvider(dbName);
                 break;
             } catch (DaoException e) {
                 if (repeatCount == 0) {
@@ -49,8 +49,11 @@ public class AuthorizationService {
             if (!dao.checkPassword(login, password)) {
                 return null;
             } else {
-                String token = generateToken();
-                dao.assignToken(login, token);
+                String token = dao.getTokenByLogin(login);
+                if (token == null) {
+                    token = generateToken();
+                    dao.assignToken(login, token);
+                }
                 return token;
             }
         } catch (SqlExecutionException e) {

@@ -17,4 +17,6 @@ public interface DatabaseProvider {
     String getLoginByToken(String token) throws SqlExecutionException;
 
     void reset() throws SqlExecutionException;
+
+    String getTokenByLogin(String login) throws SqlExecutionException;
 }

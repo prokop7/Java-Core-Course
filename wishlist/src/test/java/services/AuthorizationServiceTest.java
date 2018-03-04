@@ -31,7 +31,7 @@ public class AuthorizationServiceTest {
     }
 
     @Test
-    public  void authenticate0() throws DuplicatedLoginException, InternalDbException, EmptyFieldException, NullFieldException {
+    public void authenticate0() throws DuplicatedLoginException, InternalDbException, EmptyFieldException, NullFieldException, InvalidFieldException {
         testObject.register(l, p);
     }
 
@@ -46,7 +46,8 @@ public class AuthorizationServiceTest {
             DuplicatedLoginException,
             InternalDbException,
             EmptyFieldException,
-            NullFieldException {
+            NullFieldException,
+            InvalidFieldException {
         testObject.register(l, p);
     }
 

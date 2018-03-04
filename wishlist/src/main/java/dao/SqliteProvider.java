@@ -1,6 +1,9 @@
 package dao;
 
-import dao.exceptions.*;
+import dao.exceptions.DaoException;
+import dao.exceptions.DatabaseOpenException;
+import dao.exceptions.JdbcDriverNotFoundException;
+import dao.exceptions.SqlExecutionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,6 +13,14 @@ public class SqliteProvider implements DatabaseProvider {
     private static SqliteProvider instance = null;
     private static final Logger logger = LogManager.getLogger(SqliteProvider.class);
     private Connection connection;
+    private final String containsLogin = "SELECT login FROM users WHERE login=? LIMIT 1";
+    private final String checkLoginPassword = "SELECT login FROM users WHERE login=? AND password=? LIMIT 1";
+    private final String assignToken = "UPDATE users SET token=? WHERE login=?";
+    private final String insertRecord = "INSERT INTO users (login, password) VALUES (?, ?)";
+    private final String removeToken = "UPDATE users SET token=NULL WHERE token=?";
+    private final String loginByToken = "SELECT login FROM users WHERE token=?";
+    private final String tokenByLogin = "SELECT token FROM users WHERE login=?";
+    private final String dropTable = "DROP TABLE users";
 
     public static SqliteProvider getProvider() throws DaoException {
         if (instance == null)
@@ -55,28 +66,97 @@ public class SqliteProvider implements DatabaseProvider {
         }
     }
 
+    private static void setString(PreparedStatement stmt, int pos, String s) throws SqlExecutionException {
+        try {
+            stmt.setString(pos, s);
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new SqlExecutionException();
+        }
+    }
+
+    private PreparedStatement createStatement(String sql) throws SqlExecutionException {
+        try {
+            return connection.prepareStatement(sql);
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new SqlExecutionException();
+        }
+    }
+
     @Override
     public boolean containsLogin(String login) throws SqlExecutionException {
-        String res = getLoginBySql(String.format("SELECT login FROM users WHERE login='%s' LIMIT 1", login));
+        PreparedStatement stmt = createStatement(containsLogin);
+        setString(stmt, 1, login);
+        String res = getFirstColumn(stmt);
         return res != null;
     }
 
     @Override
     public boolean checkPassword(String login, String password) throws SqlExecutionException {
-        String res = getLoginBySql(
-                String.format("SELECT login FROM users WHERE login='%s' AND password='%s' LIMIT 1",
-                        login,
-                        password));
+        String res;
+        PreparedStatement stmt = createStatement(checkLoginPassword);
+        setString(stmt, 1, login);
+        setString(stmt, 2, password);
+        res = getFirstColumn(stmt);
         return res != null;
     }
 
-    private String getLoginBySql(String sql) throws SqlExecutionException {
+    @Override
+    public void assignToken(String login, String token) throws SqlExecutionException {
+        PreparedStatement stmt = createStatement(assignToken);
+        setString(stmt, 1, token);
+        setString(stmt, 2, login);
+        execute(stmt, false);
+    }
+
+    @Override
+    public void addRecord(String login, String password) throws SqlExecutionException {
+        PreparedStatement stmt = createStatement(insertRecord);
+        setString(stmt, 1, login);
+        setString(stmt, 2, password);
+        execute(stmt, false);
+
+    }
+
+    @Override
+    public void removeToken(String token) throws SqlExecutionException {
+        PreparedStatement stmt = createStatement(removeToken);
+        setString(stmt, 1, token);
+        execute(stmt, false);
+    }
+
+    @Override
+    public String getLoginByToken(String token) throws SqlExecutionException {
+        String res;
+        PreparedStatement stmt = createStatement(loginByToken);
+        setString(stmt, 1, token);
+        res = getFirstColumn(stmt);
+        return res;
+    }
+
+    @Override
+    public void reset() throws SqlExecutionException {
+        PreparedStatement stmt = createStatement(dropTable);
+        execute(stmt, false);
+    }
+
+    @Override
+    public String getTokenByLogin(String login) throws SqlExecutionException {
+        String res;
+        PreparedStatement stmt = createStatement(tokenByLogin);
+        setString(stmt, 1, login);
+        res = getFirstColumn(stmt);
+        return res;
+    }
+
+    private String getFirstColumn(PreparedStatement preparedStatement) throws SqlExecutionException {
         String resultLogin = null;
-        try (ResultSet set = execute(sql, true)) {
+        try (ResultSet set = execute(preparedStatement, true)) {
             if (set != null) {
                 try {
                     if (set.next())
-                        resultLogin = set.getString("login");
+                        resultLogin = set.getString(1);
                 } catch (SQLException e) {
                     logger.error(e);
                 }
@@ -86,70 +166,25 @@ public class SqliteProvider implements DatabaseProvider {
         } catch (SQLException e) {
             logger.error(e);
             return resultLogin;
+        } finally {
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                logger.error(e);
+            }
         }
     }
 
-    @Override
-    public void assignToken(String login, String token) throws SqlExecutionException {
-        execute(String.format("UPDATE users SET token='%s' WHERE login='%s'", token, login), false);
-    }
-
-    @Override
-    public void addRecord(String login, String password) throws SqlExecutionException {
-        execute(String.format("INSERT INTO users (login, password) VALUES (\"%s\", \"%s\")", login, password), false);
-    }
-
-    @Override
-    public void removeToken(String token) throws SqlExecutionException {
-        execute(String.format("UPDATE users SET token=NULL WHERE token=\"%s\"", token), false);
-    }
-
-    @Override
-    public String getLoginByToken(String token) throws SqlExecutionException {
-        return getLoginBySql(String.format("SELECT login FROM users WHERE token=\"%s\"", token));
-    }
-
-    @Override
-    public void reset() throws SqlExecutionException {
-        execute("DROP TABLE users", false);
-    }
-
-    private ResultSet execute(String sql, boolean isQuery) throws SqlExecutionException {
-        int repeatNumber = 3;
-        Statement statement = null;
-        while (repeatNumber > 0)
-            try {
-                statement = connection.createStatement();
-                break;
-            } catch (SQLException e) {
-                repeatNumber--;
-                logger.error(e);
-                if (repeatNumber == 0)
-                    throw new SqlExecutionException();
-            }
-            
+    private ResultSet execute(PreparedStatement statement, boolean isQuery) throws SqlExecutionException {
         try {
-            return execute(statement, sql, isQuery);
-        } catch (SQLException ignored) {
+            if (isQuery)
+                return statement.executeQuery();
+            statement.execute();
+            statement.close();
+            return null;
+        } catch (SQLException e) {
+            logger.error(e);
             throw new SqlExecutionException();
         }
-    }
-
-    private ResultSet execute(Statement statement, String sql, boolean isQuery) throws SQLException {
-        int repeatNumber = 3;
-        while (repeatNumber > 0)
-            try {
-                if (isQuery)
-                    return statement.executeQuery(sql);
-                else
-                    statement.execute(sql);
-                return null;
-            } catch (SQLException e) {
-                repeatNumber--;
-                logger.error(e + ". SQL=" + sql);
-                if (repeatNumber == 0)
-                    throw e;
-            }
-        return null;
     }
 }
