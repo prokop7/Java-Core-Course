@@ -29,7 +29,7 @@ public class SqliteProvider implements DatabaseProvider {
             DriverManager.registerDriver(new org.sqlite.JDBC());
         } catch (SQLException e) {
             logger.error(e);
-            throw new JdbcDriverNotFoundException(e);
+            throw new JdbcDriverNotFoundException();
         }
         try {
             connection = DriverManager.getConnection(String.format("jdbc:sqlite:%s", dbName));
@@ -51,7 +51,7 @@ public class SqliteProvider implements DatabaseProvider {
             statement.close();
         } catch (SQLException e) {
             logger.error(e);
-            throw new DatabaseOpenException(e);
+            throw new DatabaseOpenException();
         }
     }
 
