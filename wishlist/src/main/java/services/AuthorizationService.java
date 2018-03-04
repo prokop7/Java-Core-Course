@@ -8,6 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.exceptions.*;
 
+import java.util.UUID;
+
 public class AuthorizationService {
     private DatabaseProvider dao;
     private static final Logger logger = LogManager.getLogger(AuthorizationService.class);
@@ -47,7 +49,7 @@ public class AuthorizationService {
             if (!dao.checkPassword(login, password)) {
                 return null;
             } else {
-                String token = generateToken(login, password);
+                String token = generateToken();
                 dao.assignToken(login, token);
                 return token;
             }
@@ -57,21 +59,26 @@ public class AuthorizationService {
         }
     }
 
-    private String generateToken(String login, String password) {
-        return login + password;
+    private String generateToken() {
+        return String.valueOf(UUID.randomUUID());
     }
 
     public void register(String login, String password) throws
             NullFieldException,
             EmptyFieldException,
             DuplicatedLoginException,
-            InternalDbException {
+            InternalDbException,
+            InvalidFieldException {
         if (login == null || password == null)
             throw new NullFieldException();
         login = login.trim();
         password = password.trim();
         if (login.isEmpty() || password.isEmpty())
             throw new EmptyFieldException();
+
+        if (Validator.isInvalid(login) || Validator.isInvalid(password))
+            throw new InvalidFieldException();
+
         try {
             if (dao.containsLogin(login))
                 throw new DuplicatedLoginException();
