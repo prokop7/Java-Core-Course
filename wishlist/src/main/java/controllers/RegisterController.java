@@ -18,7 +18,7 @@ public class RegisterController extends HttpServlet {
     private Logger logger = LogManager.getLogger(RegisterController.class);
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         this.authService = ControllerHelper.initAuthService();
     }
 
@@ -37,9 +37,14 @@ public class RegisterController extends HttpServlet {
             logger.error(String.format("Invalid login or password: %s %s", login, password));
             sendMessage(String.format("Invalid login or password: %s %s", login, password), req, resp);
         } catch (EmptyFieldException e) {
+            logger.info("Login or password is empty");
             sendMessage("Login or password is empty", req, resp);
         } catch (NullFieldException e) {
+            logger.info("Login or password is null");
             sendMessage("Login or password is null", req, resp);
+        } catch (InvalidFieldException e) {
+            logger.info(String.format("Invalid login or password: %s %s", login, password));
+            sendMessage("Login or password contains invalid character or less than 3 symbols", req, resp);
         }
     }
 
