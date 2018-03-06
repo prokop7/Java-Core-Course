@@ -1,11 +1,15 @@
 package services;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import services.exceptions.*;
 
+import static org.junit.Assert.*;
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AuthorizationServiceTest {
     private static AuthorizationService testObject;
     private static String l = "Anton";
@@ -26,48 +30,74 @@ public class AuthorizationServiceTest {
         try {
             testObject.reset();
         } catch (InternalDbException ignored) {
-            Assert.fail();
+            fail();
         }
     }
 
     @Test
-    public void authenticate0() throws ServiceException {
+    public void authenticate00() throws ServiceException {
         testObject.register(l, p);
     }
 
     @Test
-    public void authenticate1() throws ServiceException {
+    public void authenticate01() throws ServiceException {
         token = testObject.authenticate(l, p);
-        Assert.assertNotNull(token);
+        assertNotNull(token);
     }
 
     @Test(expected = DuplicatedLoginException.class)
-    public void authenticate2() throws ServiceException {
+    public void authenticate02() throws ServiceException {
         testObject.register(l, p);
     }
 
     @Test
-    public void authenticate3() throws ServiceException {
-        Assert.assertEquals(token, testObject.authenticate(l, " " + p + " "));
+    public void authenticate03() throws ServiceException {
+        assertEquals(token, testObject.authenticate(l, " " + p + " "));
     }
 
     @Test(expected = NullFieldException.class)
-    public void authenticate4() throws ServiceException {
+    public void authenticate04() throws ServiceException {
         testObject.authenticate(null, p);
     }
 
     @Test(expected = EmptyFieldException.class)
-    public void authenticate5() throws ServiceException {
+    public void authenticate05() throws ServiceException {
         testObject.authenticate("", p);
     }
 
     @Test()
-    public void authenticate6() throws ServiceException {
-        Assert.assertNull(testObject.authenticate(l, p + 1));
+    public void authenticate06() throws ServiceException {
+        assertNull(testObject.authenticate(l, p + 1));
     }
 
     @Test(expected = InvalidFieldException.class)
-    public void authenticate7() throws ServiceException {
+    public void authenticate07() throws ServiceException {
         testObject.register("asdk^4", "asd");
     }
+
+    @Test
+    public void authenticate08() throws ServiceException {
+        assertEquals(l, testObject.authorize(token));
+    }
+
+    @Test
+    public void authenticate09() throws ServiceException {
+        assertNull(testObject.authorize("OtherToken"));
+    }
+
+    @Test
+    public void authenticate10() throws ServiceException {
+        assertNull(testObject.authorize("OtherToken"));
+    }
+
+    @Test
+    public void authenticate11() throws ServiceException {
+        testObject.logout(token);
+        String newToken = testObject.authenticate(l, p);
+        assertNotNull(newToken);
+        assertNotEquals(token, newToken);
+        token = newToken;
+    }
+
+
 }
