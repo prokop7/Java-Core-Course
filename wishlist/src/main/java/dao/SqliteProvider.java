@@ -3,7 +3,7 @@ package dao;
 import dao.exceptions.DaoException;
 import dao.exceptions.DatabaseOpenException;
 import dao.exceptions.JdbcDriverNotFoundException;
-import dao.exceptions.SqlExecutionException;
+import dao.exceptions.InternalExecutionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -66,26 +66,26 @@ public class SqliteProvider implements DatabaseProvider {
         }
     }
 
-    private static void setString(PreparedStatement stmt, int pos, String s) throws SqlExecutionException {
+    private static void setString(PreparedStatement stmt, int pos, String s) throws InternalExecutionException {
         try {
             stmt.setString(pos, s);
         } catch (SQLException e) {
             logger.error(e);
-            throw new SqlExecutionException();
+            throw new InternalExecutionException();
         }
     }
 
-    private PreparedStatement createStatement(String sql) throws SqlExecutionException {
+    private PreparedStatement createStatement(String sql) throws InternalExecutionException {
         try {
             return connection.prepareStatement(sql);
         } catch (SQLException e) {
             logger.error(e);
-            throw new SqlExecutionException();
+            throw new InternalExecutionException();
         }
     }
 
     @Override
-    public boolean containsLogin(String login) throws SqlExecutionException {
+    public boolean containsLogin(String login) throws InternalExecutionException {
         PreparedStatement stmt = createStatement(containsLogin);
         setString(stmt, 1, login);
         String res = getFirstColumn(stmt);
@@ -93,7 +93,7 @@ public class SqliteProvider implements DatabaseProvider {
     }
 
     @Override
-    public boolean checkPassword(String login, String password) throws SqlExecutionException {
+    public boolean checkPassword(String login, String password) throws InternalExecutionException {
         String res;
         PreparedStatement stmt = createStatement(checkLoginPassword);
         setString(stmt, 1, login);
@@ -103,7 +103,7 @@ public class SqliteProvider implements DatabaseProvider {
     }
 
     @Override
-    public void assignToken(String login, String token) throws SqlExecutionException {
+    public void assignToken(String login, String token) throws InternalExecutionException {
         PreparedStatement stmt = createStatement(assignToken);
         setString(stmt, 1, token);
         setString(stmt, 2, login);
@@ -111,23 +111,22 @@ public class SqliteProvider implements DatabaseProvider {
     }
 
     @Override
-    public void addRecord(String login, String password) throws SqlExecutionException {
+    public void addRecord(String login, String password) throws InternalExecutionException {
         PreparedStatement stmt = createStatement(insertRecord);
         setString(stmt, 1, login);
         setString(stmt, 2, password);
         execute(stmt, false);
-
     }
 
     @Override
-    public void removeToken(String token) throws SqlExecutionException {
+    public void removeToken(String token) throws InternalExecutionException {
         PreparedStatement stmt = createStatement(removeToken);
         setString(stmt, 1, token);
         execute(stmt, false);
     }
 
     @Override
-    public String getLoginByToken(String token) throws SqlExecutionException {
+    public String getLoginByToken(String token) throws InternalExecutionException {
         String res;
         PreparedStatement stmt = createStatement(loginByToken);
         setString(stmt, 1, token);
@@ -136,13 +135,13 @@ public class SqliteProvider implements DatabaseProvider {
     }
 
     @Override
-    public void reset() throws SqlExecutionException {
+    public void reset() throws InternalExecutionException {
         PreparedStatement stmt = createStatement(dropTable);
         execute(stmt, false);
     }
 
     @Override
-    public String getTokenByLogin(String login) throws SqlExecutionException {
+    public String getTokenByLogin(String login) throws InternalExecutionException {
         String res;
         PreparedStatement stmt = createStatement(tokenByLogin);
         setString(stmt, 1, login);
@@ -150,7 +149,7 @@ public class SqliteProvider implements DatabaseProvider {
         return res;
     }
 
-    private String getFirstColumn(PreparedStatement preparedStatement) throws SqlExecutionException {
+    private String getFirstColumn(PreparedStatement preparedStatement) throws InternalExecutionException {
         String resultLogin = null;
         try (ResultSet set = execute(preparedStatement, true)) {
             if (set != null) {
@@ -175,7 +174,7 @@ public class SqliteProvider implements DatabaseProvider {
         }
     }
 
-    private ResultSet execute(PreparedStatement statement, boolean isQuery) throws SqlExecutionException {
+    private ResultSet execute(PreparedStatement statement, boolean isQuery) throws InternalExecutionException {
         try {
             if (isQuery)
                 return statement.executeQuery();
@@ -184,7 +183,7 @@ public class SqliteProvider implements DatabaseProvider {
             return null;
         } catch (SQLException e) {
             logger.error(e);
-            throw new SqlExecutionException();
+            throw new InternalExecutionException();
         }
     }
 }

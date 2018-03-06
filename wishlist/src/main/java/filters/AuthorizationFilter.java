@@ -3,7 +3,7 @@ package filters;
 import controllers.ControllerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.AuthorizationService;
+import services.AuthService;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class AuthorizationFilter implements Filter {
-    private AuthorizationService authService;
+    private AuthService authService;
     private static Logger logger = LogManager.getLogger();
     private static final String redirectAddress = "/authentication.jsp";
 

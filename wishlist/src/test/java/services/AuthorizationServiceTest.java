@@ -18,20 +18,12 @@ public class AuthorizationServiceTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        try {
-            testObject = new AuthorizationService("test.db");
-        } catch (DbConnectionException e) {
-            e.printStackTrace();
-        }
+        testObject = new AuthorizationService("test.db");
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        try {
-            testObject.reset();
-        } catch (InternalDbException ignored) {
-            fail();
-        }
+        testObject.reset();
     }
 
     @Test

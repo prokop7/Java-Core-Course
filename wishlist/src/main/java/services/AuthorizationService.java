@@ -3,7 +3,7 @@ package services;
 import dao.DatabaseProvider;
 import dao.SqliteProvider;
 import dao.exceptions.DaoException;
-import dao.exceptions.SqlExecutionException;
+import dao.exceptions.InternalExecutionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.exceptions.*;
@@ -57,7 +57,7 @@ public class AuthorizationService implements AuthService {
                 }
                 return token;
             }
-        } catch (SqlExecutionException e) {
+        } catch (InternalExecutionException e) {
             logger.error(e);
             return null;
         }
@@ -88,7 +88,7 @@ public class AuthorizationService implements AuthService {
             if (dao.containsLogin(login))
                 throw new DuplicatedLoginException();
             dao.addRecord(login, password);
-        } catch (SqlExecutionException e) {
+        } catch (InternalExecutionException e) {
             logger.error(e);
             throw new InternalDbException();
         }
@@ -98,7 +98,7 @@ public class AuthorizationService implements AuthService {
     public String authorize(String token) {
         try {
             return dao.getLoginByToken(token);
-        } catch (SqlExecutionException e) {
+        } catch (InternalExecutionException e) {
             logger.error(e);
             return null;
         }
@@ -108,7 +108,7 @@ public class AuthorizationService implements AuthService {
     public void logout(String token) {
         try {
             dao.removeToken(token);
-        } catch (SqlExecutionException e) {
+        } catch (InternalExecutionException e) {
             logger.error(e);
         }
     }
@@ -117,7 +117,7 @@ public class AuthorizationService implements AuthService {
     public void reset() throws InternalDbException {
         try {
             this.dao.reset();
-        } catch (SqlExecutionException e) {
+        } catch (InternalExecutionException e) {
             logger.error(e);
             throw new InternalDbException();
         }

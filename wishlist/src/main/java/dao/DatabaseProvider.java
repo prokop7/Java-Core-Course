@@ -1,22 +1,22 @@
 package dao;
 
-import dao.exceptions.SqlExecutionException;
+import dao.exceptions.InternalExecutionException;
 
 public interface DatabaseProvider {
 
-    boolean containsLogin(String login) throws SqlExecutionException;
+    boolean containsLogin(String login) throws InternalExecutionException;
 
-    boolean checkPassword(String login, String password) throws SqlExecutionException;
+    boolean checkPassword(String login, String password) throws InternalExecutionException;
 
-    void assignToken(String login, String token) throws SqlExecutionException;
+    void assignToken(String login, String token) throws InternalExecutionException;
 
-    void addRecord(String login, String password) throws SqlExecutionException;
+    void addRecord(String login, String password) throws InternalExecutionException;
 
-    void removeToken(String token) throws SqlExecutionException;
+    void removeToken(String token) throws InternalExecutionException;
 
-    String getLoginByToken(String token) throws SqlExecutionException;
+    String getLoginByToken(String token) throws InternalExecutionException;
 
-    void reset() throws SqlExecutionException;
+    void reset() throws InternalExecutionException;
 
-    String getTokenByLogin(String login) throws SqlExecutionException;
+    String getTokenByLogin(String login) throws InternalExecutionException;
 }
