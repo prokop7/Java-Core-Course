@@ -1,7 +1,7 @@
 package services.exceptions;
 
-public class DbConnectionException extends Exception {
-    public DbConnectionException(String s) {
-        super(s);
+public class DbConnectionException extends ServiceException {
+    public DbConnectionException() {
+        super("Can't establish connection to the database");
     }
 }

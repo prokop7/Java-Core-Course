@@ -30,7 +30,7 @@ public class AuthorizationService {
             } catch (DaoException e) {
                 if (repeatCount == 0) {
                     logger.fatal(e);
-                    throw new DbConnectionException("Can't establish connection");
+                    throw new DbConnectionException();
                 } else {
                     logger.error(e);
                 }
@@ -69,9 +69,9 @@ public class AuthorizationService {
     public void register(String login, String password) throws
             NullFieldException,
             EmptyFieldException,
+            InvalidFieldException,
             DuplicatedLoginException,
-            InternalDbException,
-            InvalidFieldException {
+            InternalDbException {
         if (login == null || password == null)
             throw new NullFieldException();
         login = login.trim();

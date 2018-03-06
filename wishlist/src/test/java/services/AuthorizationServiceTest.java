@@ -31,45 +31,43 @@ public class AuthorizationServiceTest {
     }
 
     @Test
-    public void authenticate0() throws DuplicatedLoginException, InternalDbException, EmptyFieldException, NullFieldException, InvalidFieldException {
+    public void authenticate0() throws ServiceException {
         testObject.register(l, p);
     }
 
     @Test
-    public void authenticate1() throws NullFieldException, EmptyFieldException {
+    public void authenticate1() throws ServiceException {
         token = testObject.authenticate(l, p);
         Assert.assertNotNull(token);
     }
 
     @Test(expected = DuplicatedLoginException.class)
-    public void authenticate2() throws
-            DuplicatedLoginException,
-            InternalDbException,
-            EmptyFieldException,
-            NullFieldException,
-            InvalidFieldException {
+    public void authenticate2() throws ServiceException {
         testObject.register(l, p);
     }
 
     @Test
-    public void authenticate3() throws NullFieldException, EmptyFieldException {
+    public void authenticate3() throws ServiceException {
         Assert.assertEquals(token, testObject.authenticate(l, " " + p + " "));
     }
 
     @Test(expected = NullFieldException.class)
-    public void authenticate4() throws NullFieldException, EmptyFieldException {
+    public void authenticate4() throws ServiceException {
         testObject.authenticate(null, p);
     }
 
     @Test(expected = EmptyFieldException.class)
-    public void authenticate5() throws NullFieldException, EmptyFieldException {
+    public void authenticate5() throws ServiceException {
         testObject.authenticate("", p);
     }
 
     @Test()
-    public void authenticate6() throws NullFieldException, EmptyFieldException {
+    public void authenticate6() throws ServiceException {
         Assert.assertNull(testObject.authenticate(l, p + 1));
     }
 
-
+    @Test(expected = InvalidFieldException.class)
+    public void authenticate7() throws ServiceException {
+        testObject.register("asdk^4", "asd");
+    }
 }
