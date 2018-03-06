@@ -2,7 +2,7 @@ package controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.AuthorizationService;
+import services.AuthService;
 import services.exceptions.*;
 
 import javax.servlet.ServletException;
@@ -14,7 +14,7 @@ import java.io.IOException;
 
 @WebServlet(name = "RegisterController", urlPatterns = {"/register"})
 public class RegisterController extends HttpServlet {
-    private AuthorizationService authService;
+    private AuthService authService;
     private Logger logger = LogManager.getLogger(RegisterController.class);
 
     @Override

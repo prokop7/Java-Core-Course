@@ -2,6 +2,7 @@ package controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.AuthService;
 import services.AuthorizationService;
 import services.exceptions.DbConnectionException;
 
@@ -24,7 +25,7 @@ public class ControllerHelper {
                 .forward(req, resp);
     }
 
-    public static AuthorizationService initAuthService() {
+    public static AuthService initAuthService() {
         try {
             return new AuthorizationService();
         } catch (DbConnectionException e) {

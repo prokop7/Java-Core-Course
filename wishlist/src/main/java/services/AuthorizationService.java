@@ -10,7 +10,7 @@ import services.exceptions.*;
 
 import java.util.UUID;
 
-public class AuthorizationService {
+public class AuthorizationService implements AuthService {
     private DatabaseProvider dao;
     private static final Logger logger = LogManager.getLogger(AuthorizationService.class);
 
@@ -37,6 +37,7 @@ public class AuthorizationService {
             }
     }
 
+    @Override
     public String authenticate(String login, String password) throws NullFieldException, EmptyFieldException {
         if (login == null || password == null)
             throw new NullFieldException();
@@ -66,6 +67,7 @@ public class AuthorizationService {
         return String.valueOf(UUID.randomUUID());
     }
 
+    @Override
     public void register(String login, String password) throws
             NullFieldException,
             EmptyFieldException,
@@ -92,6 +94,7 @@ public class AuthorizationService {
         }
     }
 
+    @Override
     public String authorize(String token) {
         try {
             return dao.getLoginByToken(token);
@@ -101,16 +104,16 @@ public class AuthorizationService {
         }
     }
 
-    public boolean logout(String token) {
+    @Override
+    public void logout(String token) {
         try {
             dao.removeToken(token);
-            return true;
         } catch (SqlExecutionException e) {
             logger.error(e);
-            return false;
         }
     }
 
+    @Override
     public void reset() throws InternalDbException {
         try {
             this.dao.reset();

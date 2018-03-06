@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AuthorizationServiceTest {
-    private static AuthorizationService testObject;
+    private static AuthService testObject;
     private static String l = "Anton";
     private static String p = "123";
     private static String token = null;
@@ -93,6 +93,7 @@ public class AuthorizationServiceTest {
     @Test
     public void authenticate11() throws ServiceException {
         testObject.logout(token);
+        assertNull(testObject.authorize(token));
         String newToken = testObject.authenticate(l, p);
         assertNotNull(newToken);
         assertNotEquals(token, newToken);

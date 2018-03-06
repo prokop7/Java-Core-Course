@@ -2,7 +2,7 @@ package controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.AuthorizationService;
+import services.AuthService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @WebServlet(name = "LogoutController", urlPatterns = {"/logout"})
 public class LogoutController extends HttpServlet {
-    private AuthorizationService authService;
+    private AuthService authService;
     private Logger logger = LogManager.getLogger(RegisterController.class);
 
     @Override
