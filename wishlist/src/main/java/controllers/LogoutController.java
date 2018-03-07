@@ -3,6 +3,7 @@ package controllers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.AuthService;
+import services.exceptions.InternalDbException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,8 +24,12 @@ public class LogoutController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        authService.logout((String) req.getSession().getAttribute("token"));
-        //TODO process error
-        resp.sendRedirect("/authentication.jsp");
+        try {
+            authService.logout((String) req.getSession().getAttribute("token"));
+        } catch (InternalDbException e) {
+            logger.error(e);
+            req.setAttribute("message", "Cannot proceed signing out");
+        }
+        ControllerHelper.forward(this, req, resp, "/authentication.jsp");
     }
 }

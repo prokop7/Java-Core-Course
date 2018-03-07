@@ -11,5 +11,5 @@ public interface AuthService {
 
     String authorize(String token);
 
-    void logout(String token);
+    void logout(String token) throws InternalDbException;
 }

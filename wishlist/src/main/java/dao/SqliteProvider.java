@@ -11,26 +11,21 @@ import java.sql.*;
 
 public class SqliteProvider implements DatabaseProvider {
     private static SqliteProvider instance = null;
+    private static String dbName = "C:\\Users\\Monopolis\\Desktop\\local.db";
     private static final Logger logger = LogManager.getLogger(SqliteProvider.class);
     private Connection connection;
-    private final String containsLogin = "SELECT login FROM users WHERE login=? LIMIT 1";
-    private final String checkLoginPassword = "SELECT login FROM users WHERE login=? AND password=? LIMIT 1";
-    private final String assignToken = "UPDATE users SET token=? WHERE login=?";
-    private final String insertRecord = "INSERT INTO users (login, password) VALUES (?, ?)";
-    private final String removeToken = "UPDATE users SET token=NULL WHERE token=?";
-    private final String loginByToken = "SELECT login FROM users WHERE token=?";
-    private final String tokenByLogin = "SELECT token FROM users WHERE login=?";
-    private final String dropTable = "DROP TABLE users";
 
     public static SqliteProvider getProvider() throws DaoException {
         if (instance == null)
-            instance = new SqliteProvider("C:\\Users\\Monopolis\\Desktop\\local.db");
+            instance = new SqliteProvider(dbName);
         return instance;
     }
 
     public static SqliteProvider getProvider(String dbName) throws DaoException {
-        if (instance == null)
+        if (instance == null) {
+            SqliteProvider.dbName = dbName;
             instance = new SqliteProvider(dbName);
+        }
         return instance;
     }
 
@@ -86,6 +81,7 @@ public class SqliteProvider implements DatabaseProvider {
 
     @Override
     public boolean containsLogin(String login) throws InternalExecutionException {
+        String containsLogin = "SELECT login FROM users WHERE login=? LIMIT 1";
         PreparedStatement stmt = createStatement(containsLogin);
         setString(stmt, 1, login);
         String res = getFirstColumn(stmt);
@@ -95,6 +91,7 @@ public class SqliteProvider implements DatabaseProvider {
     @Override
     public boolean checkPassword(String login, String password) throws InternalExecutionException {
         String res;
+        String checkLoginPassword = "SELECT login FROM users WHERE login=? AND password=? LIMIT 1";
         PreparedStatement stmt = createStatement(checkLoginPassword);
         setString(stmt, 1, login);
         setString(stmt, 2, password);
@@ -104,6 +101,7 @@ public class SqliteProvider implements DatabaseProvider {
 
     @Override
     public void assignToken(String login, String token) throws InternalExecutionException {
+        String assignToken = "UPDATE users SET token=? WHERE login=?";
         PreparedStatement stmt = createStatement(assignToken);
         setString(stmt, 1, token);
         setString(stmt, 2, login);
@@ -112,6 +110,7 @@ public class SqliteProvider implements DatabaseProvider {
 
     @Override
     public void addRecord(String login, String password) throws InternalExecutionException {
+        String insertRecord = "INSERT INTO users (login, password) VALUES (?, ?)";
         PreparedStatement stmt = createStatement(insertRecord);
         setString(stmt, 1, login);
         setString(stmt, 2, password);
@@ -120,6 +119,7 @@ public class SqliteProvider implements DatabaseProvider {
 
     @Override
     public void removeToken(String token) throws InternalExecutionException {
+        String removeToken = "UPDATE users SET token=NULL WHERE token=?";
         PreparedStatement stmt = createStatement(removeToken);
         setString(stmt, 1, token);
         execute(stmt, false);
@@ -127,6 +127,7 @@ public class SqliteProvider implements DatabaseProvider {
 
     @Override
     public String getLoginByToken(String token) throws InternalExecutionException {
+        String loginByToken = "SELECT login FROM users WHERE token=?";
         PreparedStatement stmt = createStatement(loginByToken);
         setString(stmt, 1, token);
         return getFirstColumn(stmt);
@@ -134,16 +135,21 @@ public class SqliteProvider implements DatabaseProvider {
 
     @Override
     public String getTokenByLogin(String login) throws InternalExecutionException {
+        String tokenByLogin = "SELECT token FROM users WHERE login=?";
         PreparedStatement stmt = createStatement(tokenByLogin);
         setString(stmt, 1, login);
         return getFirstColumn(stmt);
     }
 
     @Override
-    public void reset() throws InternalExecutionException {
+    public void reset() throws
+            InternalExecutionException,
+            DatabaseOpenException,
+            JdbcDriverNotFoundException {
+        String dropTable = "DROP TABLE users";
         PreparedStatement stmt = createStatement(dropTable);
         execute(stmt, false);
-        instance = null;
+        instance = new SqliteProvider(dbName);
     }
 
     private String getFirstColumn(PreparedStatement preparedStatement) throws InternalExecutionException {

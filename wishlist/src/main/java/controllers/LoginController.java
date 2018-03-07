@@ -32,9 +32,11 @@ public class LoginController extends HttpServlet {
         try {
             token = authService.authenticate(login, password);
         } catch (NullFieldException e) {
+            logger.error(e);
             sendMessage("Login or password is null", req, resp);
             return;
         } catch (EmptyFieldException e) {
+            logger.warn(e);
             sendMessage("Login or password is empty", req, resp);
             return;
         }

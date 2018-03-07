@@ -22,6 +22,10 @@ public class RegisterController extends HttpServlet {
         this.authService = ControllerHelper.initAuthService();
     }
 
+    /**
+     * Do a registration of a new users
+     * @see HttpServlet for more detailed info
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

@@ -1,6 +1,8 @@
 package dao;
 
+import dao.exceptions.DatabaseOpenException;
 import dao.exceptions.InternalExecutionException;
+import dao.exceptions.JdbcDriverNotFoundException;
 
 public interface DatabaseProvider {
 
@@ -16,7 +18,7 @@ public interface DatabaseProvider {
 
     String getLoginByToken(String token) throws InternalExecutionException;
 
-    void reset() throws InternalExecutionException;
+    void reset() throws InternalExecutionException, DatabaseOpenException, JdbcDriverNotFoundException;
 
     String getTokenByLogin(String login) throws InternalExecutionException;
 }

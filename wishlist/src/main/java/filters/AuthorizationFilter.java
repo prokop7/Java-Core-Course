@@ -21,6 +21,10 @@ public class AuthorizationFilter implements Filter {
         this.authService = ControllerHelper.initAuthService();
     }
 
+    /**
+     * Authorize customers on "/**" URL.
+     * @see Filter for more detailed info
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;

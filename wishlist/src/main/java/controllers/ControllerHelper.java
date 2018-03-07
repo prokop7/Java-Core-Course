@@ -15,16 +15,28 @@ import java.io.IOException;
 public class ControllerHelper {
     static Logger logger = LogManager.getLogger();
 
+    /**
+     * Forward request to the address
+     * @param servlet   from which servlet it was forwarded
+     * @param req       redirected request
+     * @param resp      response which will be redirected
+     * @param address   destination address to the JSP component
+     */
     static void forward(
             HttpServlet servlet,
             HttpServletRequest req,
             HttpServletResponse resp,
             String address) throws ServletException, IOException {
+
         servlet.getServletContext()
                 .getRequestDispatcher(address)
                 .forward(req, resp);
     }
 
+    /**
+     * Initialize a new AuthService
+     * @return a new instance of AuthService
+     */
     public static AuthService initAuthService() {
         try {
             return new AuthorizationService();

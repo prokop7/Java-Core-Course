@@ -3,7 +3,9 @@ package services;
 import dao.DatabaseProvider;
 import dao.SqliteProvider;
 import dao.exceptions.DaoException;
+import dao.exceptions.DatabaseOpenException;
 import dao.exceptions.InternalExecutionException;
+import dao.exceptions.JdbcDriverNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.exceptions.*;
@@ -37,6 +39,14 @@ public class AuthorizationService implements AuthService {
             }
     }
 
+    /**
+     * Authenticate user
+     * @param login user's login
+     * @param password user's password
+     * @return Generated token
+     * @throws NullFieldException if login or password is null
+     * @throws EmptyFieldException if login or password is empty
+     */
     @Override
     public String authenticate(String login, String password) throws NullFieldException, EmptyFieldException {
         if (login == null || password == null)
@@ -63,10 +73,24 @@ public class AuthorizationService implements AuthService {
         }
     }
 
+    /**
+     * @return new token as a new UUID
+     */
     private String generateToken() {
         return String.valueOf(UUID.randomUUID());
     }
 
+    /**
+     * Register a new user into a system
+     * @param login new user's login
+     * @param password new user's password
+     * @throws NullFieldException if login or password is null
+     * @throws EmptyFieldException if login or password is empty
+     * @throws InvalidFieldException if login or password contains invalid characters
+     * @throws DuplicatedLoginException if login is already taken
+     * @throws InternalDbException  if internal error occurs
+     *                              doesn't depends on user's input data
+     */
     @Override
     public void register(String login, String password) throws
             NullFieldException,
@@ -94,6 +118,11 @@ public class AuthorizationService implements AuthService {
         }
     }
 
+    /**
+     * Authorize user by token
+     * @param token user's token bearer
+     * @return a login of the user
+     */
     @Override
     public String authorize(String token) {
         try {
@@ -104,20 +133,31 @@ public class AuthorizationService implements AuthService {
         }
     }
 
+    /**
+     * Eliminate a session token
+     * @param token session's token
+     */
     @Override
-    public void logout(String token) {
+    public void logout(String token) throws InternalDbException {
         try {
             dao.removeToken(token);
         } catch (InternalExecutionException e) {
             logger.error(e);
+            throw new InternalDbException();
         }
     }
 
+    /**
+     * Drops table and creates a new one.
+     * @throws InternalDbException if database can not be initialized or dropped.
+     */
     @Override
     public void reset() throws InternalDbException {
         try {
             this.dao.reset();
-        } catch (InternalExecutionException e) {
+        } catch (InternalExecutionException |
+                DatabaseOpenException |
+                JdbcDriverNotFoundException e) {
             logger.error(e);
             throw new InternalDbException();
         }
