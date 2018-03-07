@@ -18,7 +18,7 @@ public class AuthorizationServiceTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        testObject = new AuthorizationService("test.db");
+        testObject = new AuthorizationService("testAuth.db");
     }
 
     @AfterClass
@@ -81,7 +81,6 @@ public class AuthorizationServiceTest {
     public void authenticate10() throws ServiceException {
         assertNull(testObject.authorize("OtherToken"));
     }
-
     @Test
     public void authenticate11() throws ServiceException {
         testObject.logout(token);
@@ -90,6 +89,11 @@ public class AuthorizationServiceTest {
         assertNotNull(newToken);
         assertNotEquals(token, newToken);
         token = newToken;
+    }
+
+    @Test(expected = NullFieldException.class)
+    public void authenticate12() throws ServiceException {
+        testObject.register(l, null);
     }
 
 

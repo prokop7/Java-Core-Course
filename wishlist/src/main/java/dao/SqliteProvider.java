@@ -127,26 +127,23 @@ public class SqliteProvider implements DatabaseProvider {
 
     @Override
     public String getLoginByToken(String token) throws InternalExecutionException {
-        String res;
         PreparedStatement stmt = createStatement(loginByToken);
         setString(stmt, 1, token);
-        res = getFirstColumn(stmt);
-        return res;
+        return getFirstColumn(stmt);
+    }
+
+    @Override
+    public String getTokenByLogin(String login) throws InternalExecutionException {
+        PreparedStatement stmt = createStatement(tokenByLogin);
+        setString(stmt, 1, login);
+        return getFirstColumn(stmt);
     }
 
     @Override
     public void reset() throws InternalExecutionException {
         PreparedStatement stmt = createStatement(dropTable);
         execute(stmt, false);
-    }
-
-    @Override
-    public String getTokenByLogin(String login) throws InternalExecutionException {
-        String res;
-        PreparedStatement stmt = createStatement(tokenByLogin);
-        setString(stmt, 1, login);
-        res = getFirstColumn(stmt);
-        return res;
+        instance = null;
     }
 
     private String getFirstColumn(PreparedStatement preparedStatement) throws InternalExecutionException {
