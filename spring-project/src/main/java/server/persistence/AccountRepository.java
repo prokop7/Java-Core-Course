@@ -1,4 +1,4 @@
-package server.persistance;
+package server.persistence;
 
 import org.springframework.data.repository.Repository;
 import server.model.Account;
