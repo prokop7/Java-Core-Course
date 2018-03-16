@@ -38,7 +38,7 @@ public class RegisterController extends HttpServlet {
             logger.warn("Login is already taken: " + login);
             sendMessage("Login is already taken", req, resp);
         } catch (InternalDbException e) {
-            logger.error(String.format("Invalid login or password: %s %s", login, password));
+            logger.error(String.format("Internal error with login or password: %s %s", login, password));
             sendMessage(String.format("Invalid login or password: %s %s", login, password), req, resp);
         } catch (EmptyFieldException e) {
             logger.info("Login or password is empty");

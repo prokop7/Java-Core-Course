@@ -30,7 +30,6 @@ public class SqliteProvider implements DatabaseProvider {
     }
 
     private SqliteProvider(String dbName) throws DatabaseOpenException, JdbcDriverNotFoundException {
-        Statement statement;
         try {
             DriverManager.registerDriver(new org.sqlite.JDBC());
         } catch (SQLException e) {
@@ -40,21 +39,21 @@ public class SqliteProvider implements DatabaseProvider {
         try {
             connection = DriverManager.getConnection(String.format("jdbc:sqlite:%s", dbName));
             logger.debug(String.format("Database opened on \'%s\'", dbName));
-            statement = connection.createStatement();
-            statement.execute("CREATE TABLE IF NOT EXISTS users\n" +
-                    "(" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
-                    "login TEXT NOT NULL,\n" +
-                    "password TEXT NOT NULL,\n" +
-                    "token TEXT DEFAULT NULL\n" +
-                    ");");
-            statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS users_id_uindex\n" +
-                    "ON users (id);");
-            statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS users_login_uindex\n" +
-                    "ON users (login);");
-            statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS users_token_uindex\n" +
-                    "ON users (token);");
-            statement.close();
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("CREATE TABLE IF NOT EXISTS users\n" +
+                        "(" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                        "login TEXT NOT NULL,\n" +
+                        "password TEXT NOT NULL,\n" +
+                        "token TEXT DEFAULT NULL\n" +
+                        ");");
+                statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS users_id_uindex\n" +
+                        "ON users (id);");
+                statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS users_login_uindex\n" +
+                        "ON users (login);");
+                statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS users_token_uindex\n" +
+                        "ON users (token);");
+            }
         } catch (SQLException e) {
             logger.error(e);
             throw new DatabaseOpenException();
@@ -156,12 +155,7 @@ public class SqliteProvider implements DatabaseProvider {
         String resultLogin = null;
         try (ResultSet set = execute(preparedStatement, true)) {
             if (set != null) {
-                try {
-                    if (set.next())
-                        resultLogin = set.getString(1);
-                } catch (SQLException e) {
-                    logger.error(e);
-                }
+                resultLogin = getResult(set);
                 set.getStatement().close();
             }
             return resultLogin;
@@ -175,6 +169,16 @@ public class SqliteProvider implements DatabaseProvider {
                 logger.error(e);
             }
         }
+    }
+
+    private String getResult(ResultSet set) {
+        try {
+            if (set.next())
+                return set.getString(1);
+        } catch (SQLException e) {
+            logger.error(e);
+        }
+        return null;
     }
 
     private ResultSet execute(PreparedStatement statement, boolean isQuery) throws InternalExecutionException {

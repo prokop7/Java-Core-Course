@@ -14,7 +14,7 @@ import java.io.IOException;
 public class AuthorizationFilter implements Filter {
     private AuthService authService;
     private static Logger logger = LogManager.getLogger();
-    private static final String redirectAddress = "/authentication.jsp";
+    private static final String REDIRECT_ADDRESS = "/authentication.jsp";
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -41,11 +41,12 @@ public class AuthorizationFilter implements Filter {
                 }
             }
         }
-        logger.debug(String.format("Redirected to '%s'", redirectAddress));
-        ((HttpServletResponse) response).sendRedirect(redirectAddress);
+        logger.debug(String.format("Redirected to '%s'", REDIRECT_ADDRESS));
+        ((HttpServletResponse) response).sendRedirect(REDIRECT_ADDRESS);
     }
 
     @Override
     public void destroy() {
+        // ignored
     }
 }

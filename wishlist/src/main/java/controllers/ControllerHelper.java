@@ -13,7 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ControllerHelper {
-    static Logger logger = LogManager.getLogger();
+    private static Logger logger = LogManager.getLogger();
+
+    private ControllerHelper() {
+    }
 
     /**
      * Forward request to the address

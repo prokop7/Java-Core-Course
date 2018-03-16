@@ -17,7 +17,7 @@ import java.io.IOException;
 @WebServlet(name = "LoginController", urlPatterns = {"/login"})
 public class LoginController extends HttpServlet {
     private AuthService authService;
-    private Logger logger = LogManager.getLogger(RegisterController.class);
+    private static final Logger logger = LogManager.getLogger(RegisterController.class);
 
     @Override
     public void init() {

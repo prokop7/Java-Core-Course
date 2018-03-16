@@ -32,7 +32,7 @@ public class AuthorizationServiceTest {
     }
 
     @Test
-    public void authenticate01() throws ServiceException {
+    public synchronized void authenticate01() throws ServiceException {
         token = testObject.authenticate(l, p);
         assertNotNull(token);
     }
