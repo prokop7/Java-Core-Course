@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import server.model.Account;
 import server.persistence.AccountRepository;
 
 @Service
@@ -33,20 +34,17 @@ public class AuthorizationService implements AuthService {
         if ("".equals(login) || "".equals(password))
             throw new EmptyFieldException();
 
-        try {
-            if (!dao.checkPassword(login, password)) {
-                return null;
-            } else {
-                String token = dao.getTokenByLogin(login);
-                if (token == null) {
-                    token = generateToken();
-                    dao.assignToken(login, token);
-                }
-                return token;
-            }
-        } catch (InternalExecutionException e) {
-            logger.error(e);
+        Account account = accountRepository.getAccountByLoginAndPassword(login, password);
+        if (account == null) {
             return null;
+        } else {
+            String token = account.getToken();
+            if (token == null) {
+                token = generateToken();
+                account.setToken(token);
+            }
+            accountRepository.save(account);
+            return token;
         }
     }
 
@@ -86,9 +84,9 @@ public class AuthorizationService implements AuthService {
             throw new InvalidFieldException();
 
         try {
-            if (dao.containsLogin(login))
+            if (accountRepository.containsLogin(login))
                 throw new DuplicatedLoginException();
-            dao.addRecord(login, password);
+            accountRepository.addRecord(login, password);
         } catch (InternalExecutionException e) {
             logger.error(e);
             throw new InternalDbException();
@@ -103,7 +101,7 @@ public class AuthorizationService implements AuthService {
     @Override
     public String authorize(String token) {
         try {
-            return dao.getLoginByToken(token);
+            return accountRepository.getLoginByToken(token);
         } catch (InternalExecutionException e) {
             logger.error(e);
             return null;
@@ -117,7 +115,7 @@ public class AuthorizationService implements AuthService {
     @Override
     public void logout(String token) throws InternalDbException {
         try {
-            dao.removeToken(token);
+            accountRepository.removeToken(token);
         } catch (InternalExecutionException e) {
             logger.error(e);
             throw new InternalDbException();
@@ -131,7 +129,7 @@ public class AuthorizationService implements AuthService {
     @Override
     public void reset() throws InternalDbException {
         try {
-            this.dao.reset();
+            this.accountRepository.reset();
         } catch (InternalExecutionException |
                 DatabaseOpenException |
                 JdbcDriverNotFoundException e) {
