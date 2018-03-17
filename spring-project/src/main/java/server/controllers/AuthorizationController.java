@@ -8,7 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 import server.services.*;
 
 @RestController
-@RequestMapping(value = "/auth")
+@CrossOrigin(origins = "*")
 public class AuthorizationController {
     private AuthService authService;
 
@@ -52,3 +52,4 @@ public class AuthorizationController {
         return ResponseEntity.ok().build();
     }
 }
+

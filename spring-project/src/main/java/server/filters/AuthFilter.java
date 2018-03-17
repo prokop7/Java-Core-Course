@@ -1,12 +1,8 @@
 package server.filters;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
-import org.springframework.web.server.ResponseStatusException;
-import server.persistence.AccountRepository;
 import server.services.AuthService;
 
 import javax.servlet.FilterChain;
@@ -20,7 +16,7 @@ import java.io.IOException;
 
 @Component
 public class AuthFilter extends GenericFilterBean {
-    private static final String TOKEN_HEADER = "TOKEN";
+    private static final String TOKEN_HEADER = "Token";
 
     private final AuthService authService;
 
@@ -35,11 +31,14 @@ public class AuthFilter extends GenericFilterBean {
         final HttpServletResponse response = (HttpServletResponse) res;
         final String authHeader = request.getHeader(TOKEN_HEADER);
 
-        if (authHeader == null) {
+        if ("OPTIONS".equals(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else if (authHeader == null) {
+            response.setHeader("Access-Control-Allow-Origin", "*");
             response.sendError(401, "Missing Authorization header");
             return;
-        }
-        if (authService.authorize(authHeader) == null){
+        } else if (authService.authorize(authHeader) == null) {
+            response.setHeader("Access-Control-Allow-Origin", "*");
             response.sendError(401, "Invalid token");
             return;
         }
