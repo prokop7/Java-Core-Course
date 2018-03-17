@@ -1,14 +1,13 @@
 package server.services;
 
 public interface AuthService {
-    void reset() throws InternalDbException;
+    void reset();
 
     void register(String l, String p) throws
             NullFieldException,
             EmptyFieldException,
             InvalidFieldException,
-            DuplicatedLoginException,
-            InternalDbException;
+            DuplicatedLoginException;
 
     String authenticate(String l, String p) throws
             NullFieldException,
@@ -16,5 +15,5 @@ public interface AuthService {
 
     String authorize(String token);
 
-    void logout(String token) throws InternalDbException;
+    void logout(String token);
 }

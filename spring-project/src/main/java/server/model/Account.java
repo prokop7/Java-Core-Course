@@ -8,6 +8,11 @@ public class Account {
     Account() {
     }
 
+    public Account(String login, String password) {
+        this.login = login;
+        this.password = password;
+    }
+
     @Id
     private String login;
     private String password;

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import server.model.Account;
 import server.persistence.AccountRepository;
 
+import java.util.UUID;
+
 @Service
 public class AuthorizationService implements AuthService {
     private final AccountRepository accountRepository;
@@ -63,16 +65,13 @@ public class AuthorizationService implements AuthService {
      * @throws EmptyFieldException if login or password is empty
      * @throws InvalidFieldException if login or password contains invalid characters
      * @throws DuplicatedLoginException if login is already taken
-     * @throws InternalDbException  if internal error occurs
-     *                              doesn't depends on user's input data
      */
     @Override
     public void register(String login, String password) throws
             NullFieldException,
             EmptyFieldException,
             InvalidFieldException,
-            DuplicatedLoginException,
-            InternalDbException {
+            DuplicatedLoginException {
         if (login == null || password == null)
             throw new NullFieldException();
         login = login.trim();
@@ -83,14 +82,9 @@ public class AuthorizationService implements AuthService {
         if (Validator.isInvalid(login) || Validator.isInvalid(password))
             throw new InvalidFieldException();
 
-        try {
-            if (accountRepository.containsLogin(login))
-                throw new DuplicatedLoginException();
-            accountRepository.addRecord(login, password);
-        } catch (InternalExecutionException e) {
-            logger.error(e);
-            throw new InternalDbException();
-        }
+        if (accountRepository.getByLogin(login) != null)
+            throw new DuplicatedLoginException();
+        accountRepository.save(new Account(login, password));
     }
 
     /**
@@ -100,12 +94,10 @@ public class AuthorizationService implements AuthService {
      */
     @Override
     public String authorize(String token) {
-        try {
-            return accountRepository.getLoginByToken(token);
-        } catch (InternalExecutionException e) {
-            logger.error(e);
-            return null;
-        }
+        Account account = accountRepository.getAccountByToken(token);
+        if (account != null)
+            return account.getLogin();
+        return null;
     }
 
     /**
@@ -113,28 +105,17 @@ public class AuthorizationService implements AuthService {
      * @param token session's token
      */
     @Override
-    public void logout(String token) throws InternalDbException {
-        try {
-            accountRepository.removeToken(token);
-        } catch (InternalExecutionException e) {
-            logger.error(e);
-            throw new InternalDbException();
-        }
+    public void logout(String token) {
+        Account account = accountRepository.getAccountByToken(token);
+        account.setToken(null);
+        accountRepository.save(account);
     }
 
     /**
      * Drops table and creates a new one.
-     * @throws InternalDbException if database can not be initialized or dropped.
      */
     @Override
-    public void reset() throws InternalDbException {
-        try {
-            this.accountRepository.reset();
-        } catch (InternalExecutionException |
-                DatabaseOpenException |
-                JdbcDriverNotFoundException e) {
-            logger.error(e);
-            throw new InternalDbException();
-        }
+    public void reset() {
+        this.accountRepository.deleteAll();
     }
 }
