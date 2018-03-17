@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Random;
 
 @RestController
-@RequestMapping("/home")
+@RequestMapping("/content")
 public class DefaultController {
     private Random r = new Random();
 
