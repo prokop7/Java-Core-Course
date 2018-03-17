@@ -5,7 +5,10 @@ public class Main {
      */
     public static void main(String[] inputFiles) {
         SynchronizedTask.setLogging(true);
-        Handler handler = new ExecutorServiceHandler(DoubleWordsAlgorithm.class, new SimpleFetcher(inputFiles));
+        Handler handler = new ExecutorServiceHandler(
+                new SimpleFetcher(inputFiles),
+                Algorithm.class,
+                new ProxyAlgorithmFactory("C:\\Users\\proko\\Desktop\\ClassLoaders\\"));
         handler.handle();
     }
 

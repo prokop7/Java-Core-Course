@@ -19,14 +19,14 @@ import java.util.stream.Collectors;
  *      </quote>
  * @see Algorithm
  */
-public class DoubleWordsAlgorithm implements Algorithm {
+public class AlgorithmImpl2 implements Algorithm {
     private Set<Character> allowedLetters = new HashSet<>();
     // Set of separators
     private Set<Character> separatorChars = new HashSet<>();
     private static ConcurrentHashMap.KeySetView<String, Boolean> wordSet = ConcurrentHashMap.newKeySet();
     private List<Character> buffer = new ArrayList<>();
 
-    DoubleWordsAlgorithm() {
+    public AlgorithmImpl2() {
         fillSetWithLetters(allowedLetters);
         fillSetWithSeparators(separatorChars);
     }

@@ -1,6 +1,7 @@
 import java.util.List;
 
 public class MultiThreadHandler implements Handler {
+    private AlgorithmFactory factory;
     // Algorithm which will process strings
     private Class<?> algorithmClass;
     // Fetch algorithm
@@ -15,9 +16,10 @@ public class MultiThreadHandler implements Handler {
      *
      * @see Algorithm
      */
-    MultiThreadHandler(Class<?> algorithmClass, Fetcher fetcher) {
+    MultiThreadHandler(Class<?> algorithmClass, Fetcher fetcher, AlgorithmFactory factory) {
         this.algorithmClass = algorithmClass;
         this.fetcher = fetcher;
+        this.factory = factory;
     }
 
     /***
@@ -34,13 +36,7 @@ public class MultiThreadHandler implements Handler {
         SynchronizedTask.resetStopped();
         for (int i = 0; i < list.size(); i++) {
             String s = list.get(i);
-            Algorithm algorithm;
-            try {
-                algorithm = (Algorithm) algorithmClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException | ClassCastException e) {
-                System.out.printf("Cannot create instance of %s%n", algorithmClass.getName());
-                return;
-            }
+            Algorithm algorithm = factory.newAlgorithm();
             Thread thread = new Thread(new SynchronizedTask(algorithm, s), String.format("Thread %d", i));
             threads[i] = thread;
             thread.start();
