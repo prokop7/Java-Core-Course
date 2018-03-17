@@ -6,6 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import server.services.*;
+import server.services.exceptions.DuplicatedLoginException;
+import server.services.exceptions.EmptyFieldException;
+import server.services.exceptions.InvalidFieldException;
+import server.services.exceptions.NullFieldException;
 
 @RestController
 @CrossOrigin(origins = "*")

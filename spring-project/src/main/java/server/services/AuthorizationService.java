@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import server.model.Account;
 import server.persistence.AccountRepository;
+import server.services.exceptions.DuplicatedLoginException;
+import server.services.exceptions.EmptyFieldException;
+import server.services.exceptions.InvalidFieldException;
+import server.services.exceptions.NullFieldException;
 
 import java.util.UUID;
 

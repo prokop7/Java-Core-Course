@@ -1,5 +1,10 @@
 package server.services;
 
+import server.services.exceptions.DuplicatedLoginException;
+import server.services.exceptions.EmptyFieldException;
+import server.services.exceptions.InvalidFieldException;
+import server.services.exceptions.NullFieldException;
+
 public interface AuthService {
     void reset();
 
