@@ -14,7 +14,7 @@ public class Client {
         DataInputStream dataInputStream;
         boolean stopped = false;
         while (!stopped) {
-            Socket socket = establishConnection("127.0.0.1", 8080);
+            Socket socket = establishConnection(args.length > 0 ? args[0] : "127.0.0.1", 8080);
             if (socket == null)
                 return;
 

@@ -4,6 +4,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SendTask implements Runnable {
     private DataOutputStream dataOutputStream;
@@ -24,7 +26,7 @@ public class SendTask implements Runnable {
                     Thread.sleep(100);
                 }
             } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
+                Logger.getGlobal().log(Level.WARNING, e.toString());
             }
         }
         return mes;
