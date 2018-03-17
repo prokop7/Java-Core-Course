@@ -1,6 +1,5 @@
 # Compiled class file
 *.class
-!IO-Multithreading/ClassLoaders/*
 
 # Log file
 *.log
@@ -26,3 +25,6 @@ Multithreading/out/
 Multithreading/src/input/1.txt
 Multithreading/src/input/3.txt
 Net/src/obsolete/
+spring-project/.gradle/
+spring-project/out/
+spring-project/build/
