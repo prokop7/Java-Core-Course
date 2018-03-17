@@ -28,3 +28,6 @@ Net/src/obsolete/
 spring-project/.gradle/
 spring-project/out/
 spring-project/build/
+wishlist/.gradle/
+wishlist/build/
+wishlist/out/
