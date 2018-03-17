@@ -1,4 +1,4 @@
 package server.services.exceptions;
 
-public class DuplicatedLoginException extends Exception {
+public class DuplicatedLoginException extends ServiceException {
 }
