@@ -5,7 +5,7 @@ import javax.persistence.Id;
 
 @Entity
 public class Account {
-    Account() {
+    private Account() {
     }
 
     public Account(String login, String password) {

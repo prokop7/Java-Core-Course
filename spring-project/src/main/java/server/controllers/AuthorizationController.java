@@ -23,11 +23,12 @@ public class AuthorizationController {
         try {
             authService.register(login, password);
             return ResponseEntity.ok().build();
-        } catch (NullFieldException |
-                InvalidFieldException |
-                EmptyFieldException |
-                DuplicatedLoginException e) {
-            return ResponseEntity.badRequest().build();
+        } catch (NullFieldException | InvalidFieldException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid credentials");
+        } catch (EmptyFieldException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Login and password can not be empty");
+        } catch (DuplicatedLoginException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Login is already taken");
         }
     }
 
@@ -37,10 +38,10 @@ public class AuthorizationController {
         try {
             String token = authService.authenticate(login, password);
             if (token == null)
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this credentials not found");
             return String.format("{\"token\":\"%s\"}", token);
         } catch (NullFieldException | EmptyFieldException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid fields");
         }
     }
 
