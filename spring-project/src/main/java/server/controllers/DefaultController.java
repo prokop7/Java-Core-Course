@@ -11,7 +11,7 @@ import java.util.Random;
 public class DefaultController {
     private Random r = new Random();
 
-    @RequestMapping(method = RequestMethod.GET, value = "/")
+    @RequestMapping(method = RequestMethod.GET)
     int getRandom() {
         return r.nextInt();
     }
